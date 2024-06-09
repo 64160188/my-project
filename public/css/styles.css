@@ -1,0 +1,224 @@
+/* public/css/styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+.header .logo img {
+    height: 70px; /* Adjusted height for better alignment */
+}
+
+.menu-area {
+    text-align: right;
+}
+
+.menu-area-main {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center; /* Align menu items vertically */
+}
+
+.menu-area-main li {
+    margin-left: 20px;
+}
+
+.menu-area-main li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-area-main li a:hover,
+.menu-area-main li.active a {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .logo_section {
+    display: flex;
+    align-items: center;
+}
+
+.header .menu-area {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.header .limit-box {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.menu-area-main .last a img {
+    height: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .menu-area-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .menu-area-main li {
+        display: block;
+        margin: 10px 0;
+    }
+
+    .header .container {
+        flex-direction: column;
+    }
+
+    .header .menu-area {
+        text-align: center;
+    }
+}
+
+
+/* public/css/styles.css */
+/* public/css/styles.css */
+/* public/css/styles.css */
+
+/* Existing styles... */
+
+.translation-section {
+    padding: 20px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.translation-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.translation-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.translation-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.translation-controls textarea {
+    width: 40%;
+    height: 100px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.translation-controls select, .translation-controls button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.translation-controls button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+}
+
+.translation-controls button:hover {
+    background-color: #555;
+}
+
+/* Scrollable Section Styles */
+.scrollable-section {
+    padding: 20px;
+    background-color: #f0f0f0;
+    text-align: center;
+    position: relative;
+}
+
+.scroll-container-wrapper {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.scroll-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    flex: 1;
+}
+
+.scroll-item {
+    min-width: 200px;
+    padding: 100px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.scroll-btn {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+}
+
+.scroll-btn:hover {
+    background-color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .translation-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .translation-controls textarea {
+        width: 100%;
+    }
+
+    .translation-controls select, .translation-controls button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+
+/*tran-section*/
+
+.tran-section {
+    margin: 50px;
+    padding: 50px;
+    background-color: #ebe6d5;
+}
