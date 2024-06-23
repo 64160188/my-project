@@ -1,0 +1,138 @@
+/* public/css/form-styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+.header .logo img {
+    height: 70px;
+}
+
+.menu-area {
+    text-align: right;
+}
+
+.menu-area-main {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.menu-area-main li {
+    margin-left: 20px;
+}
+
+.menu-area-main li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-area-main li a:hover{
+    background-color: #555;
+    border-radius: 5px;
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header .logo_section {
+    display: flex;
+    align-items: center;
+}
+
+.header .menu-area {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.header .limit-box {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.menu-area-main .login a img {
+    height: 20px;
+}
+
+/* Form Styles */
+.form-section {
+    padding: 20px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.form-section .container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+}

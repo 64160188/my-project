@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ร้านขายสินค้า</title>
+    <link rel="stylesheet" href="/css/cart-styles.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="#">Home</a></li>
+                            <li><a href="/cart">อุปกรณ์การเรียน</a></li>
+                            <li><a href="#">ตัวอักษร</a></li>
+                            <li><a href="#">บทเรียน</a></li>
+                            <li><a href="/quiz">Quiz</a></li>
+                            <li><a href="#"><img src="images/search_icon.png" alt="Login"></a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End Header -->
+    <nav>
+        <button onclick="filterCategory('all')">ทั้งหมด</button>
+        <button onclick="filterCategory('hiragana')">หนังสือฮิรางานะ</button>
+        <button onclick="filterCategory('katakana')">หนังสือคาตาคานะ</button>
+        <button onclick="filterCategory('kanji')">หนังสือคันจิ</button>
+        <button onclick="filterCategory('stationery')">อุปกรณ์เครื่องเขียน</button>
+    </nav>
+    <section id="products">
+        <div class="product hiragana">
+            <h2>หนังสือฮิรางานะ 1</h2>
+            <p>รายละเอียดสินค้า...</p>
+        </div>
+        <div class="product hiragana">
+            <h2>หนังสือฮิรางานะ 2</h2>
+            <p>รายละเอียดสินค้า...</p>
+        </div>
+        <div class="product katakana">
+            <h2>หนังสือคาตาคานะ 1</h2>
+            <p>รายละเอียดสินค้า...</p>
+        </div>
+        <div class="product kanji">
+            <h2>หนังสือคันจิ 1</h2>
+            <p>รายละเอียดสินค้า...</p>
+        </div>
+        <div class="product stationery">
+            <h2>อุปกรณ์เครื่องเขียน 1</h2>
+            <p>รายละเอียดสินค้า...</p>
+        </div>
+        <!-- เพิ่มสินค้าตามต้องการ -->
+    </section>
+    <footer>
+        <p>ร้านขายสินค้า © 2024</p>
+    </footer>
+    <script src="/js/cart-script.js"></script>
+</body>
+</html>

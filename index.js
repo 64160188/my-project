@@ -27,6 +27,14 @@ app.get('/', function(req, res) {
     res.render('pages/index');
 });
 
-app.get('/equipment', (req, res) => {
-    res.render('pages/equipment');
+app.get('/cart', (req, res) => {
+    res.render('pages/cart');
+});
+
+app.get('/quiz', (req, res) => {
+    res.render('pages/quiz');
+});
+
+app.get('/cart-test', (req, res) => {
+    res.render('pages/cart-test');
 });

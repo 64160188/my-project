@@ -1,5 +1,7 @@
 /* public/css/styles.css */
-
+/* styles.css */
+/* public/css/form-styles.css */
+/*                     ^                         HEADHEADHEADHEADHEADHEADHEADHEADHEADHEAD                         */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -14,7 +16,7 @@ body {
 }
 
 .header .logo img {
-    height: 70px; /* Adjusted height for better alignment */
+    height: 70px;
 }
 
 .menu-area {
@@ -26,7 +28,7 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    align-items: center; /* Align menu items vertically */
+    align-items: center;
 }
 
 .menu-area-main li {
@@ -41,8 +43,8 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.menu-area-main li a:hover,
-.menu-area-main li.active a {
+.menu-area-main li a:hover{
+    
     background-color: #555;
     border-radius: 5px;
 }
@@ -51,6 +53,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .header .logo_section {
@@ -70,7 +75,7 @@ body {
     justify-content: flex-end;
 }
 
-.menu-area-main .last a img {
+.menu-area-main .login a img {
     height: 20px;
 }
 
@@ -95,9 +100,7 @@ body {
     }
 }
 
-
-/* public/css/styles.css */
-/* public/css/styles.css */
+/*                     >                         HEADHEADHEADHEADHEADHEADHEADHEADHEADHEAD                         */
 /* public/css/styles.css */
 
 /* Existing styles... */
@@ -221,4 +224,218 @@ body {
     margin: 50px;
     padding: 50px;
     background-color: #ebe6d5;
+}
+
+
+
+/* Additional styles for choice-group */
+.choice-group {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.choice-group input[type="text"] {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.choice-group button {
+    flex-shrink: 0;
+}
+*/
+
+/* public/css/cart */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.products-section {
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+.products-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.product-item {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    text-align: center;
+}
+
+.product-item img {
+    max-width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.product-item h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.product-item p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.product-item button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+}
+
+/* ---------------cart---------------------*/
+/* สไตล์สำหรับส่วนค้นหาและแท็บ */
+.search-tabs {
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.search-tabs .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#searchBox {
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #333;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.tab-button:hover,
+.tab-button.active {
+    background-color: #555;
+}
+
+/* สไตล์สำหรับส่วนเนื้อหา */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.products-section {
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+.products-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.product-item {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    text-align: center;
+}
+
+.product-item img {
+    max-width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.product-item h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.product-item p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.product-item button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.product-item button:hover {
+    background-color: #555;
+}
+
+/* การซ่อน/แสดงเนื้อหาในแต่ละแท็บ */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* สไตล์สำหรับส่วนท้าย */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* การออกแบบให้รองรับหน้าจอขนาดเล็ก */
+@media (max-width: 768px) {
+
+    .search-tabs .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #searchBox {
+        width: 100%;
+    }
 }

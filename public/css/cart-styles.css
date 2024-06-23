@@ -1,0 +1,144 @@
+/* public/css/styles.css */
+/* styles.css */
+/* public/css/form-styles.css */
+/*                     ^                         HEADHEADHEADHEADHEADHEADHEADHEADHEADHEAD                         */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+.header .logo img {
+    height: 70px;
+}
+
+.menu-area {
+    text-align: right;
+}
+
+.menu-area-main {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.menu-area-main li {
+    margin-left: 20px;
+}
+
+.menu-area-main li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-area-main li a:hover{
+    
+    background-color: #555;
+    border-radius: 5px;
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header .logo_section {
+    display: flex;
+    align-items: center;
+}
+
+.header .menu-area {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.header .limit-box {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.menu-area-main .login a img {
+    height: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .menu-area-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .menu-area-main li {
+        display: block;
+        margin: 10px 0;
+    }
+
+    .header .container {
+        flex-direction: column;
+    }
+
+    .header .menu-area {
+        text-align: center;
+    }
+}
+
+/*                     >                         HEADHEADHEADHEADHEADHEADHEADHEADHEADHEAD                         */
+nav {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+nav button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+nav button:hover {
+    background-color: #0056b3;
+}
+
+#products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.product {
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+footer {
+    background-color: #f8f8f8;
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
