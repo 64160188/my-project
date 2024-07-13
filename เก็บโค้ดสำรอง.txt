@@ -1,0 +1,41 @@
+
+    <!-- Navigation -->
+     <section class="tap-bar">
+    <nav class="nav-buttons">
+        <div class="tabs"></div>
+        <button onclick="filterCategory('all')">ทั้งหมด</button>
+        <button onclick="filterCategory('hiragana')">หนังสือฮิรางานะ</button>
+        <button onclick="filterCategory('katakana')">หนังสือคาตาคานะ</button>
+        <button onclick="filterCategory('kanji')">หนังสือคันจิ</button>
+        <button onclick="filterCategory('stationery')">อุปกรณ์เครื่องเขียน</button>
+        <input type="text" id="searchBox" placeholder="ค้นหาสินค้า...">
+    </nav>
+</section>
+    <!-- End Navigation -->
+
+
+
+    <section class="products-section">
+    <div class="container">
+        <div id="hiragana" class="tab-content active">
+            <h2>Hiragana</h2>
+            <div class="products-container">
+                <div class="product-item">
+                    <img src="images/hiragana_1.jpg" alt="Hiragana Book">
+                    <h3>Hiragana Book</h3>
+                    <p>Price: $10</p>
+                    <button>Add to Cart</button>
+                </div>
+                <!-- Add more Hiragana items here -->
+                <div class="product-item">
+                    <img src="images/hiragana_2.jpg" alt="Hiragana Book 2">
+                    <h3>Hiragana Book 2</h3>
+                    <p>Price: $15</p>
+                    <button>Add to Cart</button>
+                </div>
+                <!-- Add more Hiragana items as needed -->
+            </div>
+        </div>
+        <!-- Add similar content for Katakana and Kanji sections -->
+    </div>
+</section>

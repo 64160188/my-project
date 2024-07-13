@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %> - รายละเอียดสินค้า</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="website icon" type="png" href="/images/logo.png">
+</head>
+<body>
+    <!-- header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="/"><img src="/images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <div class="limit-box">
+                        <nav class="main-menu">
+                            <ul class="menu-area-main">
+                                <li class="active"><a href="/">Home</a></li>
+                                <li class="active"><a href="/cart">อุปกรณ์การเรียน</a></li>
+                                <li class="active"><a href="/character">ตัวอักษร</a></li>
+                                <li class="active"><a href="/learn">บทเรียน</a></li>
+                                <li class="active"><a href="/quiz">Quiz</a></li>
+                                <li class="active"><a href="/cart-test">cart</a></li>
+                                <li class="login">
+                                    <a href="#"><img src="/images/search_icon.png" alt="Login" /></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- end header -->
+
+    <!-- Product Detail Section -->
+    <div class="container">
+        <div class="product-detail">
+            <div class="product-image">
+                <img src="/images/<%= product.image %>" alt="<%= product.name %>">
+                <h2><%= product.name %></h2>
+            </div>
+            <div class="product-info">
+                <% if (product.sale_price) { %>
+                    <h3>ราคาลด: <strong class="red">$<%= product.sale_price %></strong></h3>
+                    <h3 style="text-decoration: line-through;">ราคาปกติ: <strong>$<%= product.price %></strong></h3>
+                <% } else { %>
+                    <h3>ราคา: <strong class="red">$<%= product.price %></strong></h3>
+                <% } %>
+                <p><%= product.description %></p>
+                <form action="/add_to_cart" method="post">
+                    <input type="hidden" name="id" value="<%= product.id %>">
+                    <input type="hidden" name="name" value="<%= product.name %>">
+                    <input type="hidden" name="price" value="<%= product.price %>">
+                    <input type="hidden" name="sale_price" value="<%= product.sale_price %>">
+                    <input type="hidden" name="quantity" value="<%= product.quantity %>">
+                    <input type="hidden" name="image" value="<%= product.image %>">
+                    <input type="submit" value="เพิ่มลงในตะกร้า" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Product Detail Section -->
+
+    <!-- Footer -->
+    <footer>
+        <p>ร้านขายสินค้า &copy; 2024</p>
+    </footer>
+    <!-- End Footer -->
+</body>
+</html>

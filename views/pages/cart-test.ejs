@@ -9,63 +9,82 @@
 <body>
 
     <!-- Header -->
-    <header>
-        <div class="header">
-            <div class="container">
-                <div class="logo_section">
-                    <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
-                    </div>
-                </div>
-                <div class="menu-area">
-                    <nav class="main-menu">
-                        <ul class="menu-area-main">
-                            <li><a href="#">Home</a></li>
-                            <li><a href="/cart">อุปกรณ์การเรียน</a></li>
-                            <li><a href="#">ตัวอักษร</a></li>
-                            <li><a href="#">บทเรียน</a></li>
-                            <li><a href="/quiz">Quiz</a></li>
-                            <li><a href="#"><img src="images/search_icon.png" alt="Login"></a></li>
-                        </ul>
-                    </nav>
-                </div>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="#"><img src="images/logo.png" alt="Logo"></a>
+            </div>
+            <div class="menu-area">
+                <nav class="main-menu">
+                    <ul class="menu-area-main">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="/cart">อุปกรณ์การเรียน</a></li>
+                        <li><a href="#">ตัวอักษร</a></li>
+                        <li><a href="#">บทเรียน</a></li>
+                        <li><a href="/quiz">Quiz</a></li>
+                        <li><a href="#"><img src="images/search_icon.png" alt="Search"></a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </header>
     <!-- End Header -->
-    <nav>
-        <button onclick="filterCategory('all')">ทั้งหมด</button>
-        <button onclick="filterCategory('hiragana')">หนังสือฮิรางานะ</button>
-        <button onclick="filterCategory('katakana')">หนังสือคาตาคานะ</button>
-        <button onclick="filterCategory('kanji')">หนังสือคันจิ</button>
-        <button onclick="filterCategory('stationery')">อุปกรณ์เครื่องเขียน</button>
-    </nav>
-    <section id="products">
-        <div class="product hiragana">
-            <h2>หนังสือฮิรางานะ 1</h2>
-            <p>รายละเอียดสินค้า...</p>
+
+    <!-- search and tabs -->
+    <section class="search-tabs">
+        <div class="container">
+            <h2>หมวดหมู่</h2>
+            <div class="tabs">
+                <button class="tab-button" onclick="filterCategory('all')">ทั้งหมด</button>
+                <button class="tab-button" onclick="filterCategory('hiragana')">หนังสือฮิรางานะ</button>
+                <button class="tab-button" onclick="filterCategory('katakana')">หนังสือคาตาคานะ</button>
+                <button class="tab-button" onclick="filterCategory('kanji')">หนังสือคันจิ</button>
+                <button class="tab-button" onclick="filterCategory('stationery')">อุปกรณ์เครื่องเขียน</button>
+            </div>
+            <input type="text" id="searchBox" placeholder="Search for items...">
         </div>
-        <div class="product hiragana">
-            <h2>หนังสือฮิรางานะ 2</h2>
-            <p>รายละเอียดสินค้า...</p>
-        </div>
-        <div class="product katakana">
-            <h2>หนังสือคาตาคานะ 1</h2>
-            <p>รายละเอียดสินค้า...</p>
-        </div>
-        <div class="product kanji">
-            <h2>หนังสือคันจิ 1</h2>
-            <p>รายละเอียดสินค้า...</p>
-        </div>
-        <div class="product stationery">
-            <h2>อุปกรณ์เครื่องเขียน 1</h2>
-            <p>รายละเอียดสินค้า...</p>
-        </div>
-        <!-- เพิ่มสินค้าตามต้องการ -->
     </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+    <div class="container">
+        <h2>สินค้า</h2>
+        <div class="row">
+            <% products.forEach(function(product) { %>
+                <a href="/product/<%= product.id %>" class="product-item <%= product.category %>">
+                    <div class="product-box">
+                        <img src="images/<%= product.image %>" alt="Product Image">
+                        <% if (product.sale_price) { %>
+                            <h3>ราคาลด: <strong class="red">$<%= product.sale_price %></strong></h3>
+                            <h3 style="text-decoration: line-through;">ราคาปกติ: <strong>$<%= product.price %></strong></h3>
+                        <% } else { %>
+                            <h3>ราคา: <strong class="red">$<%= product.price %></strong></h3>
+                        <% } %>
+                        <span><%= product.name %></span>
+                        <form action="/add_to_cart" method="post">
+                            <input type="hidden" name="id" value="<%= product.id %>">
+                            <input type="hidden" name="name" value="<%= product.name %>">
+                            <input type="hidden" name="price" value="<%= product.price %>">
+                            <input type="hidden" name="sale_price" value="<%= product.sale_price %>">
+                            <input type="hidden" name="quantity" value="<%= product.quantity %>">
+                            <input type="hidden" name="image" value="<%= product.image %>">
+                            <input type="submit" value="เพิ่มลงในตะกร้า" class="btn btn-primary">
+                        </form>
+                    </div>
+                </a>
+            <% }); %>
+        </div>
+    </div>
+    </section>
+    <!-- End Products Section -->
+
+    <!-- Footer -->
     <footer>
-        <p>ร้านขายสินค้า © 2024</p>
+        <p>ร้านขายสินค้า &copy; 2024</p>
     </footer>
+    <!-- End Footer -->
+
+    <!-- JavaScript -->
     <script src="/js/cart-script.js"></script>
 </body>
 </html>
