@@ -1,82 +1,6 @@
 /* public/css/cart-styles.css */
 
 /* Global styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-}
-
-/* Header styles */
-.header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 0;
-}
-
-.header .logo img {
-    height: 70px;
-}
-
-.menu-area {
-    text-align: right;
-}
-
-.menu-area-main {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.menu-area-main li {
-    margin-left: 20px;
-}
-
-.menu-area-main li a {
-    text-decoration: none;
-    color: #fff;
-    font-size: 16px;
-    padding: 5px 10px;
-    transition: background-color 0.3s ease;
-}
-
-.menu-area-main li a:hover {
-    background-color: #555;
-    border-radius: 5px;
-}
-
-.header .container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .menu-area-main {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .menu-area-main li {
-        display: block;
-        margin: 10px 0;
-    }
-
-    .header .container {
-        flex-direction: column;
-    }
-
-    .header .menu-area {
-        text-align: center;
-    }
-}
 
 /* Search tabs styles */
 .search-tabs {
@@ -226,10 +150,3 @@ nav {
     
 }
 
-/* Footer styles */
-footer {
-    background-color: #f8f8f8;
-    text-align: center;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-}

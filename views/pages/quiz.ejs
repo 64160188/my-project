@@ -22,11 +22,11 @@
                         <nav class="main-menu">
                             <ul class="menu-area-main">
                                 <li class="active"><a href="/">Home</a></li>
-                                <li class="active"><a href="/cart">อุปกรณ์การเรียน</a></li>
+                                <li class="active"><a href="/product">อุปกรณ์การเรียน</a></li>
                                 <li class="active"><a href="brand">ตัวอักษร</a></li>
                                 <li class="active"><a href="special">บทเรียน</a></li>
                                 <li class="active"><a href="/quiz">Quiz</a></li>
-                                <li class="login"><a href="#"><img src="images/search_icon.png" alt="Login"></a></li>
+                                <li class="login"><a href="#"><img src="images/Login.png" alt="Login"></a></li>
                             </ul>
                         </nav>
                     </div>
@@ -52,19 +52,31 @@
         </div>
     </div>
     
+<body>
+    <h2>Lesson Form</h2>
+    <form action="/submitForm" method="post">
+        <label for="question">Question:</label><br>
+        <input type="text" id="question" name="question"><br><br>
 
+        <label for="choice1">Choice 1:</label><br>
+        <input type="text" id="choice1" name="choices"><br>
+        <input type="checkbox" id="correct1" name="correct" value="1">
+        <label for="correct1">Correct</label><br><br>
 
-    <!-- form section -->
-    <section class="form-section">
-        <div class="container">
-            <h2>Lesson Form</h2>
-            <form id="lessonForm">
-                <div id="questions-container"></div>
-                <button type="button" onclick="addQuestion()">Add Question</button>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    </section>
+        <label for="choice2">Choice 2:</label><br>
+        <input type="text" id="choice2" name="choices"><br>
+        <input type="checkbox" id="correct2" name="correct" value="2">
+        <label for="correct2">Correct</label><br><br>
+
+        <label for="choice3">Choice 3:</label><br>
+        <input type="text" id="choice3" name="choices"><br>
+        <input type="checkbox" id="correct3" name="correct" value="3">
+        <label for="correct3">Correct</label><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+
 
     <script src="/js/form-script.js"></script>
 </body>

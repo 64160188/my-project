@@ -1,0 +1,59 @@
+<!-- lessons.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Lessons</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- เปลี่ยนเส้นทางไปยังไฟล์ CSS ของคุณ -->
+    <link rel="icon" type="image/png" href="images/logo.png">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="/"><img src="images/logo.png" alt="Logo"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <div class="limit-box">
+                        <nav class="main-menu">
+                            <ul class="menu-area-main">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/products">Products</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าสินค้าของคุณ -->
+                                <li><a href="/about">About</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าเกี่ยวกับของคุณ -->
+                                <li class="active"><a href="/lessons">Lessons</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าบทเรียนของคุณ -->
+                                <li><a href="/contact">Contact</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าติดต่อของคุณ -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End Header -->
+
+    <main class="container">
+        <a href="/add-lesson">Add Lesson</a> <!-- เพิ่มลิงก์ไปยังหน้าเพิ่มบทเรียน -->
+        <section class="grid">
+            <% lessons.forEach(lesson => { %>
+                <article>
+                    <h2><%= lesson.name %></h2>
+                    <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
+                    <p><%= lesson.description %></p>
+                    <a href="/lessons/<%= lesson.lesson_id %>">View Lesson</a>
+                </article>
+            <% }); %>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Your Website Name</p>
+    </footer>
+    <!-- End Footer -->
+</body>
+</html>

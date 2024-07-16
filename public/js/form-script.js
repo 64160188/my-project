@@ -1,62 +1,125 @@
-// public/js/form-script.js
+// form-script.js
 
-let questionCount = 0;
+function addChoice(button) {
+    const choicesContainer = button.parentElement.querySelector('.choices');
+    const choiceCount = choicesContainer.children.length;
+    const newChoiceIndex = choiceCount + 1;
+
+    const newChoiceDiv = document.createElement('div');
+    newChoiceDiv.classList.add('choice');
+
+    const newChoiceInput = document.createElement('input');
+    newChoiceInput.type = 'text';
+    newChoiceInput.name = `question_${button.parentElement.id}_choice_${newChoiceIndex}`;
+    newChoiceInput.required = true;
+
+    const newAnswerBtn = document.createElement('button');
+    newAnswerBtn.type = 'button';
+    newAnswerBtn.classList.add('answer-btn');
+    newAnswerBtn.textContent = 'False'; // Default value for new choice
+    newAnswerBtn.setAttribute('data-is-correct', 'false'); // Default is false
+
+    newAnswerBtn.addEventListener('click', function() {
+        const isCorrect = this.getAttribute('data-is-correct') === 'true';
+
+        // Update UI (optional)
+        choicesContainer.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        this.classList.add('selected');
+
+        // Optionally handle logic to set correct answer in data
+        // Example: Update data model or UI based on user selection
+        console.log(`Selected answer is correct: ${isCorrect}`);
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.textContent = 'Delete Choice';
+    deleteBtn.addEventListener('click', function() {
+        newChoiceDiv.remove();
+    });
+
+    newChoiceDiv.appendChild(newChoiceInput);
+    newChoiceDiv.appendChild(newAnswerBtn);
+    newChoiceDiv.appendChild(deleteBtn);
+    choicesContainer.appendChild(newChoiceDiv);
+}
+
+function deleteChoice(button) {
+    const choiceDiv = button.parentElement;
+    choiceDiv.remove();
+}
 
 function addQuestion() {
-    questionCount++;
-    const questionContainer = document.createElement('div');
-    questionContainer.className = 'question';
-    questionContainer.id = `question-${questionCount}`;
-    
-    questionContainer.innerHTML = `
-        <button type="button" class="remove-question" onclick="removeQuestion(${questionCount})">Remove Question</button>
-        <div class="form-group">
-            <label for="question-${questionCount}-text">Question ${questionCount}</label>
-            <input type="text" id="question-${questionCount}-text" name="question-${questionCount}-text" placeholder="Enter your question" required>
-        </div>
-        <div id="question-${questionCount}-choices" class="choices">
-            <div class="choice-group">
-                <input type="text" name="question-${questionCount}-choice-1" placeholder="Choice 1" required>
-                <button type="button" onclick="addChoice(${questionCount})">Add Choice</button>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('questions-container').appendChild(questionContainer);
+    // Add logic to dynamically add questions (if needed)
+    // Example: Create new DOM elements for another question
 }
 
-function removeQuestion(questionId) {
-    const questionElement = document.getElementById(`question-${questionId}`);
-    questionElement.remove();
+function submitForm() {
+    const form = document.getElementById('lessonForm');
+    const formData = new FormData(form);
+    const questions = [];
+
+    // Build questions array with answers
+    formData.forEach((value, key) => {
+        const [prefix, questionId, choiceId] = key.split('_');
+
+        if (prefix === 'question') {
+            const questionIndex = parseInt(questionId) - 1;
+            const choiceIndex = parseInt(choiceId) - 1;
+
+            if (!questions[questionIndex]) {
+                questions[questionIndex] = {
+                    question_text: value,
+                    choices: []
+                };
+            } else if (choiceId) {
+                questions[questionIndex].choices.push({
+                    choice_text: value,
+                    is_correct: false // Default to false
+                });
+            }
+        }
+    });
+
+    // Send questions data to the server
+    fetch('/submit-questions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ questions: questions })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        // Handle success response here (e.g., show a success message)
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Handle error here (e.g., show an error message)
+    });
 }
 
-function addChoice(questionId) {
-    const choiceCount = document.querySelectorAll(`#question-${questionId}-choices .choice-group`).length + 1;
-    const choiceGroup = document.createElement('div');
-    choiceGroup.className = 'choice-group';
-    
-    choiceGroup.innerHTML = `
-        <input type="text" name="question-${questionId}-choice-${choiceCount}" placeholder="Choice ${choiceCount}" required>
-        <button type="button" onclick="removeChoice(this)">Remove Choice</button>
-    `;
-    
-    document.getElementById(`question-${questionId}-choices`).appendChild(choiceGroup);
-}
+// Add event listener to answer buttons
+document.querySelectorAll('.answer-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const isCorrect = button.getAttribute('data-is-correct') === 'true';
 
-function removeChoice(button) {
-    button.parentElement.remove();
-}
+        // Update UI (optional)
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        button.classList.add('selected');
 
-document.getElementById('lessonForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(this);
-    for (let [name, value] of formData) {
-        console.log(name, value);
-    }
-    
-    alert('Form submitted successfully!');
-    this.reset();
-    document.getElementById('questions-container').innerHTML = '';
-    questionCount = 0;
+        // Optionally handle logic to set correct answer in data
+        // Example: Update data model or UI based on user selection
+        console.log(`Selected answer is correct: ${isCorrect}`);
+    });
 });

@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= product.name %> - รายละเอียดสินค้า</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/detail.css">
     <link rel="website icon" type="png" href="/images/logo.png">
 </head>
 <body>
+    
     <!-- header -->
     <header>
         <div class="header">
@@ -26,9 +28,8 @@
                                 <li class="active"><a href="/character">ตัวอักษร</a></li>
                                 <li class="active"><a href="/learn">บทเรียน</a></li>
                                 <li class="active"><a href="/quiz">Quiz</a></li>
-                                <li class="active"><a href="/cart-test">cart</a></li>
                                 <li class="login">
-                                    <a href="#"><img src="/images/search_icon.png" alt="Login" /></a>
+                                    <a href="#"><img src="/images/Login.png" alt="Login" /></a>
                                 </li>
                             </ul>
                         </nav>
@@ -44,9 +45,9 @@
         <div class="product-detail">
             <div class="product-image">
                 <img src="/images/<%= product.image %>" alt="<%= product.name %>">
-                <h2><%= product.name %></h2>
             </div>
             <div class="product-info">
+                <h2><%= product.name %></h2>
                 <% if (product.sale_price) { %>
                     <h3>ราคาลด: <strong class="red">$<%= product.sale_price %></strong></h3>
                     <h3 style="text-decoration: line-through;">ราคาปกติ: <strong>$<%= product.price %></strong></h3>
@@ -67,6 +68,20 @@
         </div>
     </div>
     <!-- End Product Detail Section -->
+
+    <!-- Additional Information Section -->
+    <div class="container">
+        <div class="additional-info">
+            <h3>ข้อมูลเพิ่มเติม</h3>
+            <p><strong>บาร์โค้ด:</strong> <%= product.barcode %></p>
+            <p><strong>ISBN:</strong> <%= product.isbn %></p>
+            <p><strong>ขนาด:</strong> <%= product.size %></p>
+            <p><strong>วันที่เพิ่ม:</strong> <%= product.date %></p>
+            <p><strong>แท็ก:</strong> <%= product.tags %></p>
+        </div>
+    </div>
+    <!-- End Additional Information Section -->
+
 
     <!-- Footer -->
     <footer>

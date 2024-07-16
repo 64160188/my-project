@@ -1,52 +1,4 @@
-/* cart-styles.css */
-
 /* General Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-}
-
-.header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 0;
-}
-
-.header .container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.menu-area-main {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.menu-area-main li {
-    margin-left: 20px;
-}
-
-.menu-area-main li a {
-    text-decoration: none;
-    color: #fff;
-    font-size: 16px;
-    padding: 5px 10px;
-    transition: background-color 0.3s ease;
-}
-
-.menu-area-main li a:hover {
-    background-color: #555;
-    border-radius: 5px;
-}
 
 .nav-buttons {
     display: flex;
@@ -76,11 +28,6 @@ body {
     width: 200px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
 
 .row {
     display: grid;
@@ -125,9 +72,84 @@ body {
     background-color: #0056b3;
 }
 
-footer {
-    background-color: #f8f8f8;
-    text-align: center;
+
+/* Product Detail Section */
+.product-detail {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    flex: 1;
     padding: 10px;
-    border-top: 1px solid #ccc;
+    text-align: center;
+}
+
+.product-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.product-info {
+    flex: 2;
+    padding: 10px;
+}
+
+.product-info h2 {
+    margin-bottom: 20px;
+}
+
+.product-info h3 {
+    margin: 10px 0;
+}
+
+.product-info p {
+    margin: 20px 0;
+}
+
+.product-info .red {
+    color: red;
+}
+
+.product-info form {
+    margin-top: 20px;
+}
+
+.product-info form input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.product-info form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.detail {
+    background-color: #007bff
+}
+
+.additional-info {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.additional-info h3 {
+    margin-bottom: 15px;
+}
+
+.additional-info p {
+    margin: 5px 0;
 }

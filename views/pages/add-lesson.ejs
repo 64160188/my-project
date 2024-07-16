@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Lesson</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="/"><img src="/images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <div class="limit-box">
+                        <nav class="main-menu">
+                            <ul class="menu-area-main">
+                                <li class="active"><a href="/">Home</a></li>
+                                <li class="active"><a href="/cart">อุปกรณ์การเรียน</a></li>
+                                <li class="active"><a href="/character">ตัวอักษร</a></li>
+                                <li class="active"><a href="/learn">บทเรียน</a></li>
+                                <li class="active"><a href="/quiz">Quiz</a></li>
+                                <li class="login">
+                                    <a href="#"><img src="/images/Login.png" alt="Login" /></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- end header -->
+
+
+    <main>
+        <h1>Add New Lesson and Questions</h1>
+        <form id="lessonForm" action="/addLessonAndQuestions" method="POST" enctype="multipart/form-data">
+            <h2>Add New Lesson</h2>
+            <label for="lesson_name">ชื่อบทเรียน:</label>
+            <input type="text" id="lesson_name" name="lesson_name" required><br><br>
+        
+            <label for="lesson_description">คำอธิบาย:</label><br>
+            <textarea id="lesson_description" name="lesson_description" rows="4" cols="50" required></textarea><br><br>
+        
+            <label for="lesson_image">รูปภาพบทเรียน:</label>
+            <input type="file" id="lesson_image" name="lesson_image" accept="image/*" required><br><br>
+            
+            <div id="questions-container">
+                <div class="question" data-question-number="1">
+                    <label for="question_1">คำถาม 1</label>
+                    <input type="text" id="question_1" name="questions[]" required>
+                    <br><br>
+                    <label>ตัวเลือก:</label><br>
+                    <input type="text" id="answer_1_1" name="answers[]" required>
+                    <input type="radio" id="correct_1_1" name="correct_choices[0]" value="1" required>
+                    <label for="correct_1_1">คำตอบที่ถูกต้อง</label>
+                    <br><br>
+                    <input type="text" id="answer_1_2" name="answers[]" required>
+                    <input type="radio" id="correct_1_2" name="correct_choices[0]" value="2" required>
+                    <label for="correct_1_2">คำตอบที่ถูกต้อง</label>
+                    <br><br>
+                    <input type="text" id="answer_1_3" name="answers[]" required>
+                    <input type="radio" id="correct_1_3" name="correct_choices[0]" value="3" required>
+                    <label for="correct_1_3">คำตอบที่ถูกต้อง</label>
+                    <br><br>
+                    <input type="text" id="answer_1_4" name="answers[]" required>
+                    <input type="radio" id="correct_1_4" name="correct_choices[0]" value="4" required>
+                    <label for="correct_1_4">คำตอบที่ถูกต้อง</label>
+                    <br><br>
+                </div>
+            </div>
+        
+            <!-- เพิ่มปุ่มและปรับปรุงแบบฟอร์ม -->
+            <button type="button" onclick="addQuestion()">เพิ่มคำถาม</button><br><br>
+            <button type="submit">เพิ่มบทเรียน</button>
+        </form>
+        <a href="/successPage">Add Lesson successPage</a>
+
+        <script src="/js/addLesson-script.js"></script>
+    </main>
+</body>
+</html>

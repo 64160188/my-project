@@ -136,3 +136,21 @@ button {
 button:hover {
     background-color: #555;
 }
+
+/* form-styles.css (หรือไฟล์ CSS ที่ใช้งาน) */
+
+.selected {
+    background-color: green;
+    color: white;
+}
+
+.answer-btn, .delete-btn {
+    border-radius: 50%; /* ทำให้ปุ่มกลม */
+    padding: 10px; /* ปรับขนาดให้พอดี */
+    margin-left: 10px; /* ทำให้ระยะห่างด้านซ้ายของปุ่ม */
+}
+
+.delete-btn {
+    background-color: red; /* สีพื้นหลังปุ่มลดชอย */
+    color: white; /* สีตัวหนังสือในปุ่มลดชอย */
+}
