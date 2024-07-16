@@ -39,3 +39,651 @@
         <!-- Add similar content for Katakana and Kanji sections -->
     </div>
 </section>
+
+
+<!-- Product Detail Section -->
+<div class="container">
+    <div class="product-detail">
+        <div class="product-image">
+            <img src="/images/<%= product.image %>" alt="<%= product.name %>">
+        </div>
+        <div class="product-info">
+            <h2><%= product.name %></h2>
+            <% if (product.sale_price) { %>
+                <h3>ราคาลด: <strong class="red">$<%= product.sale_price %></strong></h3>
+                <h3 style="text-decoration: line-through;">ราคาปกติ: <strong>$<%= product.price %></strong></h3>
+            <% } else { %>
+                <h3>ราคา: <strong class="red">$<%= product.price %></strong></h3>
+            <% } %>
+            <p><%= product.description %></p>
+            <form action="/add_to_cart" method="post">
+                <input type="hidden" name="id" value="<%= product.id %>">
+                <input type="hidden" name="name" value="<%= product.name %>">
+                <input type="hidden" name="price" value="<%= product.price %>">
+                <input type="hidden" name="sale_price" value="<%= product.sale_price %>">
+                <input type="hidden" name="quantity" value="<%= product.quantity %>">
+                <input type="hidden" name="image" value="<%= product.image %>">
+                <input type="submit" value="เพิ่มลงในตะกร้า" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End Product Detail Section -->
+
+
+
+
+
+
+------------------------------------------------ Form.js
+// public/js/form-script.js
+
+let questionCount = 0;
+
+function addQuestion() {
+    questionCount++;
+    const questionContainer = document.createElement('div');
+    questionContainer.className = 'question';
+    questionContainer.id = `question-${questionCount}`;
+    
+    questionContainer.innerHTML = `
+        <button type="button" class="remove-question" onclick="removeQuestion(${questionCount})">Remove Question</button>
+        <div class="form-group">
+            <label for="question-${questionCount}-text">Question ${questionCount}</label>
+            <input type="text" id="question-${questionCount}-text" name="question-${questionCount}-text" placeholder="Enter your question" required>
+        </div>
+        <div id="question-${questionCount}-choices" class="choices">
+            <div class="choice-group">
+                <input type="text" name="question-${questionCount}-choice-1" placeholder="Choice 1" required>
+                <button type="button" onclick="addChoice(${questionCount})">Add Choice</button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('questions-container').appendChild(questionContainer);
+}
+
+function removeQuestion(questionId) {
+    const questionElement = document.getElementById(`question-${questionId}`);
+    questionElement.remove();
+}
+
+function addChoice(questionId) {
+    const choiceCount = document.querySelectorAll(`#question-${questionId}-choices .choice-group`).length + 1;
+    const choiceGroup = document.createElement('div');
+    choiceGroup.className = 'choice-group';
+    
+    choiceGroup.innerHTML = `
+        <input type="text" name="question-${questionId}-choice-${choiceCount}" placeholder="Choice ${choiceCount}" required>
+        <button type="button" onclick="removeChoice(this)">Remove Choice</button>
+    `;
+    
+    document.getElementById(`question-${questionId}-choices`).appendChild(choiceGroup);
+}
+
+function removeChoice(button) {
+    button.parentElement.remove();
+}
+
+document.getElementById('lessonForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(this);
+    for (let [name, value] of formData) {
+        console.log(name, value);
+    }
+    
+    alert('Form submitted successfully!');
+    this.reset();
+    document.getElementById('questions-container').innerHTML = '';
+    questionCount = 0;
+});
+-------------------------------------------------------------
+
+
+
+
+
+var express = require('express');
+var ejs = require('ejs');
+var bodyParser = require('body-parser');
+var mysql = require('mysql');
+var session = require('express-session');
+
+var app = express();
+
+// บอกให้ express ใช้ folder public
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views'); // Ensure this line points to your views directory
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// ตั้งค่าการเชื่อมต่อกับฐานข้อมูล MySQL
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "node_project_chanpe"
+});
+
+//Connection to the MySQL database
+connection.connect((error) => {
+    if (error) {
+        console.error('Error connecting to the database: ', error);
+    } else {
+        console.log('Connected to the database');
+    }
+});
+
+app.use(session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.get('/product/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+
+    // ดึงข้อมูลสินค้าจากฐานข้อมูล
+    connection.query('SELECT * FROM products WHERE id = ?', [productId], (err, result) => {
+        if (err) {
+            console.error('Error fetching product: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/product-detail', { product: result[0] });
+        } else {
+            res.status(404).send('Product not found');
+        }
+    });
+});
+
+app.listen(3000, function() {
+    console.log('Server is running on port 3000');
+});
+
+app.get('/', function(req, res) {
+    res.render('pages/index');
+});
+
+app.get('/cart', (req, res) => {
+    res.render('pages/cart');
+});
+
+app.get('/quiz', (req, res) => {
+    res.render('pages/quiz');
+});
+
+// แก้ไขเส้นทาง /cart-test เพื่อดึงข้อมูลสินค้าและส่งไปยังหน้า cart-test.ejs
+app.get('/product', (req, res) => {
+    connection.query("SELECT * FROM products", (err, result) => {
+        if (err) {
+            console.error('Error fetching products: ', err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            res.render('pages/product', { products: result });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+<!-- form section -->
+<section class="form-section">
+    <div class="container">
+        <h2>Lesson Form</h2>
+        <form id="lessonForm" onsubmit="submitForm(); return false;">
+            <div id="questions-container">
+                <!-- Example question with choices -->
+                <div class="question">
+                    <label for="question_1">Question 1:</label>
+                    <input type="text" id="question_1" name="question_1" required>
+                    <div class="choices">
+                        <div class="choice">
+                            <input type="text" name="question_1_choice_1" required>
+                            <button type="button" class="answer-btn" data-is-correct="true">True</button>
+                            <button type="button" onclick="deleteChoice(this)">Delete Choice</button>
+                        </div>
+                        <div class="choice">
+                            <input type="text" name="question_1_choice_2" required>
+                            <button type="button" class="answer-btn" data-is-correct="false">False</button>
+                            <button type="button" onclick="deleteChoice(this)">Delete Choice</button>
+                        </div>
+                        <!-- Additional choices can be added dynamically -->
+                    </div>
+                    <button type="button" onclick="addChoice(this)">Add Choice</button>
+                </div>
+                <!-- Additional questions can be added dynamically -->
+            </div>
+            <button type="button" onclick="addQuestion()">Add Question</button>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var express = require('express');
+var ejs = require('ejs');
+var bodyParser = require('body-parser');
+var mysql = require('mysql');
+var session = require('express-session');
+const multer = require('multer');
+
+var app = express();
+
+
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views'); // Ensure this line points to your views directory
+app.use(multer({ dest: './uploads/' }).single('lesson_image')); // If using multer for file uploads
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "node_project_chanpe"
+});
+
+
+connection.connect((error) => {
+    if (error) {
+        console.error('Error connecting to the database: ', error);
+    } else {
+        console.log('Connected to the database');
+    }
+});
+
+app.use(session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false
+}));
+
+
+
+// Multer setup for file uploads
+const upload = multer({ dest: 'uploads/' });
+
+// Route to handle form submission for adding lesson and questions
+app.post('/addLessonAndQuestions', upload.single('lesson_image'), (req, res) => {
+    const { lesson_name, lesson_description, lesson_image, questions, answers } = req.body;
+
+    // Insert lesson into Lessons table
+    const sqlAddLesson = 'INSERT INTO lessons (name, description, image) VALUES (?, ?, ?)';
+    connection.query(sqlAddLesson, [lesson_name, lesson_description, lesson_image], (err, result) => {
+        if (err) {
+            console.error('Error adding lesson:', err);
+            res.status(500).send('Failed to add lesson.');
+            return;
+        }
+
+        const lessonId = result.insertId;
+
+        // Insert questions into Questions table
+        const sqlAddQuestions = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, lesson_id) VALUES ?';
+        const values = questions.map((question, index) => [
+            question,
+            answers[index * 4],
+            answers[index * 4 + 1],
+            answers[index * 4 + 2],
+            answers[index * 4 + 3],
+            index * 4 + 1,
+            lessonId
+        ]);
+
+        connection.query(sqlAddQuestions, [values], (err, results) => {
+            if (err) {
+                console.error('Error adding questions:', err);
+                res.status(500).send('Failed to add questions.');
+                return;
+            }
+
+            res.send('Lesson and questions added successfully.');
+        });
+    });
+});
+
+
+
+
+
+app.get('/product/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+
+
+    connection.query('SELECT * FROM products WHERE id = ?', [productId], (err, result) => {
+        if (err) {
+            console.error('Error fetching product: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/product-detail', { product: result[0] });
+        } else {
+            res.status(404).send('Product not found');
+        }
+    });
+});
+
+
+app.get('/lessons/:id', (req, res) => {
+    const lessonId = parseInt(req.params.id);
+
+    connection.query('SELECT * FROM Lessons WHERE lesson_id = ?', [lessonId], (err, result) => {
+        if (err) {
+            console.error('Error fetching lesson: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/lesson-detail', { lesson: result[0] });
+        } else {
+            res.status(404).send('Lesson not found');
+        }
+    });
+});
+
+
+app.listen(3000, function() {
+    console.log('Server is running on port 3000');
+});
+
+app.get('/', function(req, res) {
+    res.render('pages/index');
+});
+
+
+app.get('/quiz', (req, res) => {
+    res.render('pages/quiz');
+});
+
+app.get('/questions', (req, res) => {
+    res.render('pages/questions');
+});
+
+app.get('/add-lesson', (req, res) => {
+    res.render('pages/add-lesson');
+});
+
+
+
+
+app.get('/lessons', (req, res) => {
+    const sql = 'SELECT * FROM Lessons';
+
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching lessons: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        res.render('pages/lessons', { lessons: results });
+    });
+});
+
+
+app.get('/product', (req, res) => {
+    connection.query("SELECT * FROM products", (err, result) => {
+        if (err) {
+            console.error('Error fetching products: ', err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            res.render('pages/product', { products: result });
+        }
+    });
+});
+
+
+
+// Add this route to handle POST request to add a new lesson
+app.post('/addLesson', (req, res) => {
+    const { name, description, image_url } = req.body;
+
+    const sql = 'INSERT INTO Lessons (name, description, image_url) VALUES (?, ?, ?)';
+    connection.query(sql, [name, description, image_url], (err, result) => {
+        if (err) {
+            console.error('Error adding new lesson: ', err);
+            res.status(500).send('Failed to add new lesson');
+        } else {
+            console.log('New lesson added successfully');
+            res.redirect('/lessons'); // Redirect back to lessons page or wherever appropriate
+        }
+    });
+});
+
+
+
+
+
+
+const express = require('express');
+const ejs = require('ejs');
+const bodyParser = require('body-parser');
+const mysql = require('mysql');
+const session = require('express-session');
+const multer = require('multer');
+const path = require('path');
+const router = express.Router();
+
+
+const app = express();
+
+app.use(express.static('public')); 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '/views'));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "node_project_chanpe"
+});
+
+connection.connect((error) => {
+    if (error) {
+        console.error('Error connecting to the database: ', error);
+    } else {
+        console.log('Connected to the database');
+    }
+});
+
+app.use(session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false
+}));
+
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, 'public/uploads'), // Update destination folder here
+    filename: function(req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+
+// ตรวจสอบประเภทไฟล์
+function checkFileType(file, cb) {
+    const filetypes = /jpeg|jpg|png/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb('Error: Images only!');
+    }
+}
+
+// ตั้งค่า Multer
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: function(req, file, cb) {
+        checkFileType(file, cb);
+    }
+}).single('lesson_image');
+
+// Routes
+app.get('/add-lesson', (req, res) => {
+    res.render('pages/add-lesson');
+});
+
+app.post('/addLessonAndQuestions', (req, res) => {
+    upload(req, res, function(err) {
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ success: false, message: 'File size is too large. Max limit is 5MB.' });
+            }
+            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        } else if (err) {
+            console.error('Error uploading file:', err);
+            return res.status(500).json({ success: false, message: 'Error uploading file' });
+        }
+
+        const { lesson_name, lesson_description, questions, answers } = req.body;
+        const lesson_image = req.file ? req.file.filename : 'default.jpg';
+
+        const sql = 'INSERT INTO Lessons (name, description, image) VALUES (?, ?, ?)';
+        connection.query(sql, [lesson_name, lesson_description, lesson_image], (err, result) => {
+            if (err) {
+                console.error('Error inserting lesson:', err);
+                return res.status(500).json({ success: false, message: 'Error adding lesson' });
+            }
+
+            const lessonId = result.insertId;
+            const questionSql = 'INSERT INTO Questions (lesson_id, question, answer1, answer2, answer3, answer4) VALUES ?';
+            const questionData = questions.map((question, index) => [
+                lessonId,
+                question,
+                answers[index * 4],
+                answers[index * 4 + 1],
+                answers[index * 4 + 2],
+                answers[index * 4 + 3]
+            ]);
+
+            connection.query(questionSql, [questionData], (err) => {
+                if (err) {
+                    console.error('Error inserting questions:', err);
+                    return res.status(500).json({ success: false, message: 'Error adding questions' });
+                }
+
+                res.json({ success: true, lessonId: lessonId, message: 'Lesson and questions added successfully' });
+            });
+        });
+    });
+});
+
+
+
+
+
+-----------------------------------------------------------------------------------------check
+// Example route to fetch product details by ID
+app.get('/product/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+    connection.query('SELECT * FROM products WHERE id = ?', [productId], (err, result) => {
+        if (err) {
+            console.error('Error fetching product: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/product-detail', { product: result[0] });
+        } else {
+            res.status(404).send('Product not found');
+        }
+    });
+});
+
+// Example route to fetch lesson details by ID
+app.get('/lessons/:id', (req, res) => {
+    const lessonId = parseInt(req.params.id);
+    connection.query('SELECT * FROM Lessons WHERE lesson_id = ?', [lessonId], (err, result) => {
+        if (err) {
+            console.error('Error fetching lesson: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/lesson-detail', { lesson: result[0] });
+        } else {
+            res.status(404).send('Lesson not found');
+        }
+    });
+});
+
+// Route to fetch all lessons
+app.get('/lessons', (req, res) => {
+    const sql = 'SELECT * FROM Lessons';
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching lessons: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('pages/lessons', { lessons: results });
+    });
+});
+
+// Example route to fetch all products
+app.get('/products', (req, res) => {
+    connection.query("SELECT * FROM products", (err, result) => {
+        if (err) {
+            console.error('Error fetching products: ', err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            res.render('pages/products', { products: result });
+        }
+    });
+});
+
+// Example route to render the homepage
+app.get('/', (req, res) => {
+    res.render('pages/index');
+});
+
+// Example route to render the quiz page
+app.get('/quiz', (req, res) => {
+    res.render('pages/quiz');
+});
+
+// Example route to render the questions page
+app.get('/questions', (req, res) => {
+    res.render('pages/questions');
+});
+
+// Example route to handle POST request to add a new lesson
+app.post('/addLesson', (req, res) => {
+    const { name, description, image } = req.body;
+    const sql = 'INSERT INTO Lessons (name, description, image_url) VALUES (?, ?, ?)';
+    connection.query(sql, [name, description, image], (err, result) => {
+        if (err) {
+            console.error('Error adding new lesson: ', err);
+            res.status(500).send('Failed to add new lesson');
+        } else {
+            console.log('New lesson added successfully');
+            res.redirect('/lessons'); // Redirect back to lessons page or wherever appropriate
+        }
+    });
+});
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});

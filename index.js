@@ -1,19 +1,21 @@
-var express = require('express');
-var ejs = require('ejs');
-var bodyParser = require('body-parser');
-var mysql = require('mysql');
-var session = require('express-session');
+const express = require('express');
+const ejs = require('ejs');
+const bodyParser = require('body-parser');
+const mysql = require('mysql');
+const session = require('express-session');
+const multer = require('multer');
+const path = require('path');
+const router = express.Router();
 
-var app = express();
 
-// บอกให้ express ใช้ folder public
-app.use(express.static('public'));
+const app = express();
+
+app.use(express.static('public')); 
 app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views'); // Ensure this line points to your views directory
-
+app.set('views', path.join(__dirname, '/views'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-// ตั้งค่าการเชื่อมต่อกับฐานข้อมูล MySQL
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -21,7 +23,6 @@ const connection = mysql.createConnection({
     database: "node_project_chanpe"
 });
 
-//Connection to the MySQL database
 connection.connect((error) => {
     if (error) {
         console.error('Error connecting to the database: ', error);
@@ -36,10 +37,109 @@ app.use(session({
     saveUninitialized: false
 }));
 
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, 'public/uploads'), // Update destination folder here
+    filename: function(req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+
+// ตรวจสอบประเภทไฟล์
+function checkFileType(file, cb) {
+    const filetypes = /jpeg|jpg|png/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb('Error: Images only!');
+    }
+}
+
+// ตั้งค่า Multer
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: function(req, file, cb) {
+        checkFileType(file, cb);
+    }
+}).single('lesson_image');
+
+// Routes
+app.get('/add-lesson', (req, res) => {
+    res.render('pages/add-lesson');
+});
+
+
+app.post('/addLessonAndQuestions', (req, res) => {
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ success: false, message: 'File size is too large. Max limit is 5MB.' });
+            }
+            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        } else if (err) {
+            console.error('Error uploading file:', err);
+            return res.status(500).json({ success: false, message: 'Error uploading file' });
+        }
+
+        const { lesson_name, lesson_description } = req.body;
+        const lesson_image = req.file ? req.file.filename : 'default.jpg';
+
+        const sql = 'INSERT INTO Lessons (name, description, image) VALUES (?, ?, ?)';
+        connection.query(sql, [lesson_name, lesson_description, lesson_image], (err, lessonResult) => {
+            if (err) {
+                console.error('Error inserting lesson:', err);
+                return res.status(500).json({ success: false, message: 'Error adding lesson' });
+            }
+
+            const lessonId = lessonResult.insertId; // แก้ lessonResult เป็น result ที่ได้จาก callback ของ query
+
+
+            
+            // Prepare questions data
+            const questions = req.body.questions;
+            const answers = req.body.answers;
+            const correctChoices = req.body.correct_choices;
+            
+            const questionData = questions.map((question, index) => [
+                question,
+                answers[index * 4],
+                answers[index * 4 + 1],
+                answers[index * 4 + 2],
+                answers[index * 4 + 3],
+                correctChoices[index],
+                lessonId
+            ]);
+            
+            const questionSql = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, lesson_id) VALUES ?';
+            
+            // Insert questions into database
+            connection.query(questionSql, [questionData], (err, questionResult) => {
+                if (err) {
+                    console.error('Error inserting questions:', err);
+                    return res.status(500).json({ success: false, message: 'Error adding questions' });
+                }
+            
+                res.json({ success: true, lessonId: lessonId, message: 'Lesson and questions added successfully' });
+            });
+            
+        });
+    });
+});
+
+
+
+
+
+
+
+
+
+// Example route to fetch product details by ID
 app.get('/product/:id', (req, res) => {
     const productId = parseInt(req.params.id);
-
-    // ดึงข้อมูลสินค้าจากฐานข้อมูล
     connection.query('SELECT * FROM products WHERE id = ?', [productId], (err, result) => {
         if (err) {
             console.error('Error fetching product: ', err);
@@ -52,30 +152,77 @@ app.get('/product/:id', (req, res) => {
     });
 });
 
-app.listen(3000, function() {
-    console.log('Server is running on port 3000');
+// Example route to fetch lesson details by ID
+app.get('/lessons/:id', (req, res) => {
+    const lessonId = parseInt(req.params.id);
+    connection.query('SELECT * FROM Lessons WHERE lesson_id = ?', [lessonId], (err, result) => {
+        if (err) {
+            console.error('Error fetching lesson: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/lesson-detail', { lesson: result[0] });
+        } else {
+            res.status(404).send('Lesson not found');
+        }
+    });
 });
 
-app.get('/', function(req, res) {
-    res.render('pages/index');
+// Route to fetch all lessons
+app.get('/lessons', (req, res) => {
+    const sql = 'SELECT * FROM Lessons';
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching lessons: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('pages/lessons', { lessons: results });
+    });
 });
 
-app.get('/cart', (req, res) => {
-    res.render('pages/cart');
-});
-
-app.get('/quiz', (req, res) => {
-    res.render('pages/quiz');
-});
-
-// แก้ไขเส้นทาง /cart-test เพื่อดึงข้อมูลสินค้าและส่งไปยังหน้า cart-test.ejs
-app.get('/cart-test', (req, res) => {
+// Example route to fetch all products
+app.get('/products', (req, res) => {
     connection.query("SELECT * FROM products", (err, result) => {
         if (err) {
             console.error('Error fetching products: ', err);
             res.status(500).send('Internal Server Error');
         } else {
-            res.render('pages/cart-test', { products: result });
+            res.render('pages/products', { products: result });
         }
     });
+});
+
+// Example route to render the homepage
+app.get('/', (req, res) => {
+    res.render('pages/index');
+});
+
+// Example route to render the quiz page
+app.get('/quiz', (req, res) => {
+    res.render('pages/quiz');
+});
+
+// Example route to render the questions page
+app.get('/questions', (req, res) => {
+    res.render('pages/questions');
+});
+
+// Example route to handle POST request to add a new lesson
+app.post('/addLesson', (req, res) => {
+    const { name, description, image } = req.body;
+    const sql = 'INSERT INTO Lessons (name, description, image_url) VALUES (?, ?, ?)';
+    connection.query(sql, [name, description, image], (err, result) => {
+        if (err) {
+            console.error('Error adding new lesson: ', err);
+            res.status(500).send('Failed to add new lesson');
+        } else {
+            console.log('New lesson added successfully');
+            res.redirect('/lessons'); // Redirect back to lessons page or wherever appropriate
+        }
+    });
+});
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });
