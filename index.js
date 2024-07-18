@@ -137,7 +137,6 @@ app.post('/addLessonAndQuestions', (req, res) => {
 
 
 
-// Example route to fetch product details by ID
 app.get('/product/:id', (req, res) => {
     const productId = parseInt(req.params.id);
     connection.query('SELECT * FROM products WHERE id = ?', [productId], (err, result) => {
@@ -152,7 +151,7 @@ app.get('/product/:id', (req, res) => {
     });
 });
 
-// Example route to fetch lesson details by ID
+
 app.get('/lessons/:id', (req, res) => {
     const lessonId = parseInt(req.params.id);
     connection.query('SELECT * FROM Lessons WHERE lesson_id = ?', [lessonId], (err, result) => {
@@ -167,7 +166,7 @@ app.get('/lessons/:id', (req, res) => {
     });
 });
 
-// Route to fetch all lessons
+
 app.get('/lessons', (req, res) => {
     const sql = 'SELECT * FROM Lessons';
     connection.query(sql, (err, results) => {
@@ -180,7 +179,7 @@ app.get('/lessons', (req, res) => {
     });
 });
 
-// Example route to fetch all products
+
 app.get('/products', (req, res) => {
     connection.query("SELECT * FROM products", (err, result) => {
         if (err) {
@@ -191,6 +190,39 @@ app.get('/products', (req, res) => {
         }
     });
 });
+
+app.get('/questions/:id', (req, res) => {
+    const lessonId = req.params.id;
+
+    connection.query('SELECT * FROM lessons WHERE lesson_id = ?', [lessonId], (err, lessonResults) => {
+        if (err) {
+            console.error('Error fetching lesson:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        if (lessonResults.length === 0) {
+            res.status(404).send('Lesson not found');
+            return;
+        }
+
+        const lesson = lessonResults[0];
+
+        connection.query('SELECT * FROM questions WHERE lesson_id = ?', [lessonId], (err, questionResults) => {
+            if (err) {
+                console.error('Error fetching questions:', err);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+
+            res.render('pages/questions', { lesson: lesson, questions: questionResults });
+        });
+    });
+});
+
+
+
+
 
 // Example route to render the homepage
 app.get('/', (req, res) => {

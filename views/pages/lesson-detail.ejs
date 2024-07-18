@@ -34,15 +34,18 @@
         </div>
     </header>
 
-    <h1><%= lesson.name %></h1>
+        <h1><%= lesson.name %></h1>
     <main>
         <div class="lesson-detail">
             <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
             <p><%= lesson.description %></p>
         </div>
         <a href="/lessons">Back to Lessons</a>
+        <a href="/questions/<%= lesson.lesson_id %>">Start Quiz</a>
     </main>
 
+
+    
     <footer>
         <p>ร้านขายสินค้า &copy; 2024</p>
     </footer>

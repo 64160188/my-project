@@ -1,11 +1,11 @@
-<!-- lessons.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Lessons</title>
-    <link rel="stylesheet" href="/css/styles.css"> <!-- เปลี่ยนเส้นทางไปยังไฟล์ CSS ของคุณ -->
+    <title>Quiz: Test Your Knowledge</title>
+    <link rel="stylesheet" href="/css/lesson-styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
 <body>
@@ -15,7 +15,7 @@
             <div class="container">
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="/"><img src="images/logo.png" alt="Logo"></a>
+                        <a href=""><img src="images/logo.png" alt="Logo"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -23,10 +23,11 @@
                         <nav class="main-menu">
                             <ul class="menu-area-main">
                                 <li><a href="/">Home</a></li>
-                                <li><a href="/products">Products</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าสินค้าของคุณ -->
-                                <li><a href="/about">About</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าเกี่ยวกับของคุณ -->
-                                <li class="active"><a href="/lessons">Lessons</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าบทเรียนของคุณ -->
-                                <li><a href="/contact">Contact</a></li> <!-- เปลี่ยนเส้นทางไปยังหน้าติดต่อของคุณ -->
+                                <li><a href="/product">อุปกรณ์การเรียน</a></li>
+                                <li><a href="brand">ตัวอักษร</a></li>
+                                <li><a href="/questions">บทเรียน</a></li>
+                                <li class="active"><a href="/quiz">Quiz</a></li>
+                                <li class="login"><a href="#"><img src="images/Login.png" alt="Login"></a></li>
                             </ul>
                         </nav>
                     </div>
@@ -36,23 +37,38 @@
     </header>
     <!-- End Header -->
 
-    <main class="container">
-        <section class="grid">
-            <% lessons.forEach(lesson => { %>
-                <article>
-                    <h2><%= lesson.name %></h2>
-                    <img src="<%= lesson.image_url %>" alt="<%= lesson.name %>">
-                    <p><%= lesson.description %></p>
-                    <a href="/lessons/<%= lesson.lesson_id %>">View Lesson</a>
-                </article>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Quiz: Test Your Knowledge for Lesson ID 1</h1>
+        <div id="quiz-container">
+            <% questions.forEach((question, index) => { %>
+                <% if (question.lesson_id === 1) { %>
+                    <div class="question">
+                        <p>Question <%= index + 1 %>: <%= question.question %></p>
+                        <ul>
+                            <li><%= question.choice1 %></li>
+                            <li><%= question.choice2 %></li>
+                            <li><%= question.choice3 %></li>
+                            <li><%= question.choice4 %></li>
+                        </ul>
+                    </div>
+                <% } %>
             <% }); %>
-        </section>
-    </main>
+        </div>
+        <button onclick="submitQuiz()">Submit Quiz</button>
+        <div id="result"></div>
+    </div>
+    <!-- End Main Content -->
+
 
     <!-- Footer -->
     <footer>
-        <p>© 2024 Your Website Name</p>
+        <p>ร้านขายสินค้า &copy; 2024</p>
     </footer>
     <!-- End Footer -->
+
+    <!-- Script -->
+    <script src="/js/quiz-script.js"></script>
 </body>
 </html>

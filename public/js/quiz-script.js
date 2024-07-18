@@ -1,59 +1,40 @@
-const quizData = [
-    {
-        question: "What is the capital of France?",
-        choices: ["London", "Paris", "Berlin", "Madrid"],
-        correctAnswer: "Paris"
-    },
-    {
-        question: "Who painted the Mona Lisa?",
-        choices: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
-        correctAnswer: "Leonardo da Vinci"
-    },
-    // Add more questions as needed
-];
-
-const quizContainer = document.getElementById('quiz-container');
-const resultContainer = document.getElementById('result');
-
-function loadQuiz() {
-    quizData.forEach((quiz, index) => {
-        const questionDiv = document.createElement('div');
-        questionDiv.classList.add('question');
-        questionDiv.innerHTML = `
-            <h3>Question ${index + 1}: ${quiz.question}</h3>
-            ${quiz.choices.map(choice => `
-                <input type="radio" name="question-${index}" value="${choice}">
-                <label>${choice}</label><br>
-            `).join('')}
-        `;
-        quizContainer.appendChild(questionDiv);
-    });
-}
+// quiz-script.js
 
 function submitQuiz() {
-    let correctCount = 0;
-    const answers = [];
-    const quizQuestions = document.querySelectorAll('.question');
-    
-    quizQuestions.forEach((question, index) => {
-        const selectedAnswer = question.querySelector('input:checked');
-        if (selectedAnswer) {
-            answers.push(selectedAnswer.value);
-            if (selectedAnswer.value === quizData[index].correctAnswer) {
-                correctCount++;
-            }
-        }
-    });
-    
-    const totalQuestions = quizData.length;
-    const score = (correctCount / totalQuestions) * 100;
-    
-    resultContainer.innerHTML = `
-        <h2>Quiz Result</h2>
-        <p>You got ${correctCount} out of ${totalQuestions} correct (${score.toFixed(2)}%)</p>
-    `;
-}
+    const answers = []; // Array เก็บคำตอบที่ผู้ใช้เลือก
+    const questions = document.querySelectorAll('.question');
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadQuiz();
-});
+    questions.forEach(question => {
+        const choices = question.querySelectorAll('input[type="radio"]');
+        let selectedChoice = null;
+
+        choices.forEach(choice => {
+            if (choice.checked) {
+                selectedChoice = choice.value;
+            }
+        });
+
+        answers.push(selectedChoice);
+    });
+
+    // ตรวจสอบคำตอบ
+    // ในตัวอย่างนี้จะเพียงแค่แสดงผลคำตอบที่ถูกต้องออกทาง console.log สำหรับการทดสอบ
+    console.log(answers); // แทนที่จะทำการเรียก API หรือฐานข้อมูลเพื่อตรวจสอบคำตอบ
+
+    // ส่วนนี้คุณสามารถเขียนโค้ดเพื่อเรียก API หรือตรวจสอบคำตอบในฐานข้อมูลได้ตามต้องการ
+    // เช่น fetch API, axios, หรือการใช้งานฝังเบาเฟิร์มเว็บ
+
+    // เช่น
+    // fetch('/check-answers', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({ answers: answers })
+    // }).then(response => response.json())
+    //   .then(data => {
+    //       console.log(data); // แสดงผลลัพธ์จากการตรวจสอบคำตอบ
+    //       // ทำการแสดงผลลัพธ์ที่หน้าเว็บ เช่นผลคะแนนหรืออื่น ๆ
+    //   })
+    //   .catch(error => console.error('Error checking answers:', error));
+}
