@@ -39,27 +39,42 @@
 
  
 <!-- Main Content -->
-
 <main>
-    <% if (lesson && questions.length > 0) { %>
-        <h1>Quiz: <%= lesson.name %></h1>
-        <div id="quiz-container">
-            <% questions.forEach((question, index) => { %>
-                <div class="question">
-                    <p>Question <%= index + 1 %>: <%= question.question %></p>
-                    <ul>
-                        <input type="radio"><%= question.choice1 %>
-                        <input type="radio"><%= question.choice2 %>
-                        <input type="radio"><%= question.choice3 %>
-                        <input type="radio"><%= question.choice4 %>
-                    </ul>
-                </div>
-            <% }); %>
-        </div>
+    <% if (test && questions.length > 0) { %>
+        <h1>Quiz: <%= test.name %></h1>
+        <form action="/submit-quiz/<%= test.test_id %>" method="POST">
+            <div id="quiz-container">
+                <% questions.forEach((question, index) => { %>
+                    <div class="question">
+                        <p>Question <%= index + 1 %>: <%= question.question %></p>
+                        <div class="choices">
+                            <div>
+                                <input type="radio" name="question<%= index %>" value="1" id="q<%= index %>c1">
+                                <label for="q<%= index %>c1"><%= question.choice1 %></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="question<%= index %>" value="2" id="q<%= index %>c2">
+                                <label for="q<%= index %>c2"><%= question.choice2 %></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="question<%= index %>" value="3" id="q<%= index %>c3">
+                                <label for="q<%= index %>c3"><%= question.choice3 %></label>
+                            </div>
+                            <div>
+                                <input type="radio" name="question<%= index %>" value="4" id="q<%= index %>c4">
+                                <label for="q<%= index %>c4"><%= question.choice4 %></label>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+            <button type="submit">Submit Quiz</button>
+        </form>
     <% } else { %>
-        <p>No questions found for this lesson.</p>
+        <p>No questions found for this test.</p>
     <% } %>
 </main>
+
 
 <!-- End Main Content -->
 

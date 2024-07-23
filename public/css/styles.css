@@ -314,3 +314,36 @@ article {
     padding: 1rem;
     text-align: center;
 }
+
+
+
+
+/* styles.css */
+#results-container {
+    margin-top: 2rem;
+}
+
+.question-result {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #fafafa;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.question-result p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.choices {
+    margin-bottom: 1rem;
+}
+
+.choices div {
+    margin-bottom: 0.5rem;
+}
+
+.choices label {
+    margin-left: 0.5rem;
+}

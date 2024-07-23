@@ -222,6 +222,33 @@ app.get('/questions/:id', (req, res) => {
     });
 });
 
+app.post('/submit-quiz/:testId', (req, res) => {
+    const testId = req.params.testId;
+    const userAnswers = req.body; // คำตอบที่ส่งมาจากฟอร์ม
+
+    connection.query('SELECT * FROM questions WHERE test_id = ?', [testId], (err, questions) => {
+        if (err) {
+            console.error('Error fetching questions:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        let score = 0;
+        questions.forEach((question, index) => {
+            const userAnswer = userAnswers[`question${index}`];
+            if (userAnswer && parseInt(userAnswer) === question.correct_choice) {
+                score++;
+            }
+        });
+
+        res.render('pages/quiz-results', {
+            testId: testId,
+            score: score,
+            totalQuestions: questions.length,
+            userAnswers: userAnswers,
+            questions: questions
+        });
+    });
+});
 
 
 

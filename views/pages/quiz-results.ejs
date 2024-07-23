@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <main>
+        <h1>Quiz Results for Test ID <%= testId %></h1>
+        <p>Your score: <%= score %> out of <%= totalQuestions %></p>
+        <div id="results-container">
+            <% questions.forEach((question, index) => { %>
+                <div class="question-result">
+                    <p>Question <%= index + 1 %>: <%= question.question %></p>
+                    <div class="choices">
+                        <div>
+                            <input type="radio" disabled <%= userAnswers[`question${index}`] == '1' ? 'checked' : '' %>>
+                            <label><%= question.choice1 %></label>
+                        </div>
+                        <div>
+                            <input type="radio" disabled <%= userAnswers[`question${index}`] == '2' ? 'checked' : '' %>>
+                            <label><%= question.choice2 %></label>
+                        </div>
+                        <div>
+                            <input type="radio" disabled <%= userAnswers[`question${index}`] == '3' ? 'checked' : '' %>>
+                            <label><%= question.choice3 %></label>
+                        </div>
+                        <div>
+                            <input type="radio" disabled <%= userAnswers[`question${index}`] == '4' ? 'checked' : '' %>>
+                            <label><%= question.choice4 %></label>
+                        </div>
+                    </div>
+                    <p>Correct Answer: <%= question[`choice${question.correct_choice}`] %></p>
+                </div>
+            <% }); %>
+        </div>
+        <a href="/lessons">Back to Lessons</a>
+    </main>
+</body>
+</html>
