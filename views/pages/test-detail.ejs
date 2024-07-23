@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= lesson.name %> - Lesson Detail</title>
+    <title><%= test.name %> - test Detail</title>
     <link rel="stylesheet" href="/css/styles.css"> <!-- ต้องแก้ไขเป็น CSS ที่ใช้กับโปรเจคของคุณ -->
     <link rel="icon" type="image/png" href="/images/logo.png"> <!-- ต้องแก้ไขเป็น path ที่ถูกต้องของ logo.png -->
 </head>
@@ -34,15 +34,17 @@
         </div>
     </header>
 
-        <h1><%= lesson.name %></h1>
+    <!-- Main Content -->
     <main>
-        <div class="lesson-detail">
-            <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
-            <p><%= lesson.description %></p>
+        <div class="test-detail">
+            <h1><%= test.name %></h1>
+            <img src="/uploads/<%= test.image %>" alt="Test Image">
+            <p><%= test.description %></p>
         </div>
-        <a href="/lessons">Back to Lessons</a>
-        <a href="/questions/<%= lesson.lesson_id %>">Start Quiz</a>
+        <a href="/tests">Back to Tests</a>
+        <a href="/questions/<%= test.test_id %>">Start Quiz</a>
     </main>
+    <!-- End Main Content -->
 
 
     

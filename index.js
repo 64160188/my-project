@@ -64,15 +64,15 @@ const upload = multer({
     fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
-}).single('lesson_image');
+}).single('test_image');
 
 // Routes
-app.get('/add-lesson', (req, res) => {
-    res.render('pages/add-lesson');
+app.get('/add-test', (req, res) => {
+    res.render('pages/add-test');
 });
 
 
-app.post('/addLessonAndQuestions', (req, res) => {
+app.post('/addTestAndQuestions', (req, res) => {
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             if (err.code === 'LIMIT_FILE_SIZE') {
@@ -84,20 +84,18 @@ app.post('/addLessonAndQuestions', (req, res) => {
             return res.status(500).json({ success: false, message: 'Error uploading file' });
         }
 
-        const { lesson_name, lesson_description } = req.body;
-        const lesson_image = req.file ? req.file.filename : 'default.jpg';
+        const { test_name, test_description } = req.body;
+        const test_image = req.file ? req.file.filename : 'default.jpg';
 
-        const sql = 'INSERT INTO Lessons (name, description, image) VALUES (?, ?, ?)';
-        connection.query(sql, [lesson_name, lesson_description, lesson_image], (err, lessonResult) => {
+        const sql = 'INSERT INTO tests (name, description, image) VALUES (?, ?, ?)';
+        connection.query(sql, [test_name, test_description, test_image], (err, testResult) => {
             if (err) {
-                console.error('Error inserting lesson:', err);
-                return res.status(500).json({ success: false, message: 'Error adding lesson' });
+                console.error('Error inserting test:', err);
+                return res.status(500).json({ success: false, message: 'Error adding test' });
             }
 
-            const lessonId = lessonResult.insertId; // แก้ lessonResult เป็น result ที่ได้จาก callback ของ query
+            const testId = testResult.insertId; // เปลี่ยนเป็น testResult.insertId
 
-
-            
             // Prepare questions data
             const questions = req.body.questions;
             const answers = req.body.answers;
@@ -110,10 +108,10 @@ app.post('/addLessonAndQuestions', (req, res) => {
                 answers[index * 4 + 2],
                 answers[index * 4 + 3],
                 correctChoices[index],
-                lessonId
+                testId
             ]);
             
-            const questionSql = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, lesson_id) VALUES ?';
+            const questionSql = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, test_id) VALUES ?';
             
             // Insert questions into database
             connection.query(questionSql, [questionData], (err, questionResult) => {
@@ -122,12 +120,13 @@ app.post('/addLessonAndQuestions', (req, res) => {
                     return res.status(500).json({ success: false, message: 'Error adding questions' });
                 }
             
-                res.json({ success: true, lessonId: lessonId, message: 'Lesson and questions added successfully' });
+                res.json({ success: true, testId: testId, message: 'Test and questions added successfully' });
             });
             
         });
     });
 });
+
 
 
 
@@ -151,33 +150,34 @@ app.get('/product/:id', (req, res) => {
     });
 });
 
-
-app.get('/lessons/:id', (req, res) => {
-    const lessonId = parseInt(req.params.id);
-    connection.query('SELECT * FROM Lessons WHERE lesson_id = ?', [lessonId], (err, result) => {
+app.get('/tests/:id', (req, res) => {
+    const testId = parseInt(req.params.id);
+    connection.query('SELECT * FROM tests WHERE test_id = ?', [testId], (err, result) => {
         if (err) {
-            console.error('Error fetching lesson: ', err);
+            console.error('Error fetching test: ', err);
             res.status(500).send('Internal Server Error');
         } else if (result.length > 0) {
-            res.render('pages/lesson-detail', { lesson: result[0] });
+            res.render('pages/test-detail', { test: result[0] });
         } else {
-            res.status(404).send('Lesson not found');
+            res.status(404).send('Test not found');
         }
     });
 });
 
 
-app.get('/lessons', (req, res) => {
-    const sql = 'SELECT * FROM Lessons';
+
+app.get('/tests', (req, res) => {
+    const sql = 'SELECT * FROM tests';
     connection.query(sql, (err, results) => {
         if (err) {
-            console.error('Error fetching lessons: ', err);
+            console.error('Error fetching tests: ', err);
             res.status(500).send('Internal Server Error');
             return;
         }
-        res.render('pages/lessons', { lessons: results });
+        res.render('pages/tests', { tests: results });
     });
 });
+
 
 
 app.get('/products', (req, res) => {
@@ -192,30 +192,32 @@ app.get('/products', (req, res) => {
 });
 
 app.get('/questions/:id', (req, res) => {
-    const lessonId = req.params.id;
+    const testId = req.params.id;
 
-    connection.query('SELECT * FROM lessons WHERE lesson_id = ?', [lessonId], (err, lessonResults) => {
+    // ดึงข้อมูลจากตาราง tests
+    connection.query('SELECT * FROM tests WHERE test_id = ?', [testId], (err, testResults) => {
         if (err) {
-            console.error('Error fetching lesson:', err);
+            console.error('Error fetching test:', err);
             res.status(500).send('Internal Server Error');
             return;
         }
 
-        if (lessonResults.length === 0) {
-            res.status(404).send('Lesson not found');
+        if (testResults.length === 0) {
+            res.status(404).send('Test not found');
             return;
         }
 
-        const lesson = lessonResults[0];
+        const test = testResults[0];
 
-        connection.query('SELECT * FROM questions WHERE lesson_id = ?', [lessonId], (err, questionResults) => {
+        // ดึงข้อมูลคำถามจากตาราง questions
+        connection.query('SELECT * FROM questions WHERE test_id = ?', [testId], (err, questionResults) => {
             if (err) {
                 console.error('Error fetching questions:', err);
                 res.status(500).send('Internal Server Error');
                 return;
             }
 
-            res.render('pages/questions', { lesson: lesson, questions: questionResults });
+            res.render('pages/questions', { test: test, questions: questionResults });
         });
     });
 });
@@ -239,17 +241,17 @@ app.get('/questions', (req, res) => {
     res.render('pages/questions');
 });
 
-// Example route to handle POST request to add a new lesson
-app.post('/addLesson', (req, res) => {
+// Example route to handle POST request to add a new test
+app.post('/addTest', (req, res) => {
     const { name, description, image } = req.body;
-    const sql = 'INSERT INTO Lessons (name, description, image_url) VALUES (?, ?, ?)';
+    const sql = 'INSERT INTO tests (name, description, image) VALUES (?, ?, ?)';
     connection.query(sql, [name, description, image], (err, result) => {
         if (err) {
-            console.error('Error adding new lesson: ', err);
-            res.status(500).send('Failed to add new lesson');
+            console.error('Error adding new test: ', err);
+            res.status(500).send('Failed to add new test');
         } else {
-            console.log('New lesson added successfully');
-            res.redirect('/lessons'); // Redirect back to lessons page or wherever appropriate
+            console.log('New test added successfully');
+            res.redirect('/tests'); // Redirect back to tests page or wherever appropriate
         }
     });
 });

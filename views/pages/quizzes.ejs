@@ -36,31 +36,29 @@
         </div>
     </header>
     <!-- End Header -->
-
-
-    <!-- Main Content -->
-    <div class="container">
-        <h1>Quiz: Test Your Knowledge for Lesson ID 1</h1>
-        <div id="quiz-container">
-            <% questions.forEach((question, index) => { %>
-                <% if (question.lesson_id === 1) { %>
-                    <div class="question">
-                        <p>Question <%= index + 1 %>: <%= question.question %></p>
-                        <ul>
-                            <li><%= question.choice1 %></li>
-                            <li><%= question.choice2 %></li>
-                            <li><%= question.choice3 %></li>
-                            <li><%= question.choice4 %></li>
-                        </ul>
-                    </div>
-                <% } %>
-            <% }); %>
-        </div>
-        <button onclick="submitQuiz()">Submit Quiz</button>
-        <div id="result"></div>
+     
+<!-- Main Content -->
+<div class="container">
+    <h1>Quiz: Test Your Knowledge for Test ID <%= test.test_id %></h1>
+    <div id="quiz-container">
+        <% questions.forEach((question, index) => { %>
+            <% if (question.test_id === <%= test.test_id %>) { %>
+                <div class="question">
+                    <p>Question <%= index + 1 %>: <%= question.question %></p>
+                    <ul>
+                        <li><input type="radio" name="question<%= index %>" value="1"> <%= question.choice1 %></li>
+                        <li><input type="radio" name="question<%= index %>" value="2"> <%= question.choice2 %></li>
+                        <li><input type="radio" name="question<%= index %>" value="3"> <%= question.choice3 %></li>
+                        <li><input type="radio" name="question<%= index %>" value="4"> <%= question.choice4 %></li>
+                    </ul>
+                </div>
+            <% } %>
+        <% }); %>
     </div>
-    <!-- End Main Content -->
-
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <div id="result"></div>
+</div>
+<!-- End Main Content -->
 
     <!-- Footer -->
     <footer>

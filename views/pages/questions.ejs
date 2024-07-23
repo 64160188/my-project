@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz: Test Your Knowledge</title>
-    <link rel="stylesheet" href="/css/lesson-styles.css">
+    <link rel="stylesheet" href="/css/question-styles.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
@@ -48,10 +48,10 @@
                 <div class="question">
                     <p>Question <%= index + 1 %>: <%= question.question %></p>
                     <ul>
-                        <li><%= question.choice1 %></li>
-                        <li><%= question.choice2 %></li>
-                        <li><%= question.choice3 %></li>
-                        <li><%= question.choice4 %></li>
+                        <input type="radio"><%= question.choice1 %>
+                        <input type="radio"><%= question.choice2 %>
+                        <input type="radio"><%= question.choice3 %>
+                        <input type="radio"><%= question.choice4 %>
                     </ul>
                 </div>
             <% }); %>

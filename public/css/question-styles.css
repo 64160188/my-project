@@ -1,0 +1,38 @@
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+#quiz-container {
+    margin-top: 2rem;
+}
+
+.question {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #fafafa;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.question p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.question ul {
+    list-style: none;
+    padding: 0;
+}
+
+.question ul li {
+    margin-bottom: 0.5rem;
+}
+
+input[type="radio"] {
+    margin-right: 0.5rem;
+}
