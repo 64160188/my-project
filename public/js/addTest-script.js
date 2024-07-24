@@ -34,21 +34,19 @@ function addQuestion() {
     questionsContainer.appendChild(questionDiv);
 }
 
-
-
-document.getElementById('lessonForm').addEventListener('submit', function(event) {
+document.getElementById('testForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
     const formData = new FormData(this);
 
-    fetch('/addLessonAndQuestions', {
+    fetch('/addTestAndQuestions', {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.location.href = `/successPage?lessonId=${data.lessonId}`;
+            window.location.href = `/successPage?testId=${data.testId}`;
         } else {
             document.getElementById('result-container').innerHTML = data.message;
             document.getElementById('result-container').style.display = 'block';

@@ -1,19 +1,19 @@
 document.addEventListener('DOMContentLoaded', function () {
-    fetchQuizzes(); // เมื่อโหลดหน้าเว็บเสร็จสิ้น ให้ดึงข้อมูลบททดสอบมาแสดง
+    fetchQuizzes();
 });
 
 function fetchQuizzes() {
-    fetch('/api/quizzes') // เปลี่ยน URL ตาม API endpoint ของคุณ
+    fetch('/api/quizzes') 
         .then(response => response.json())
         .then(data => {
-            displayQuizzes(data); // แสดงรายชื่อบททดสอบที่ได้รับ
+            displayQuizzes(data);
         })
         .catch(error => console.error('Error fetching quizzes:', error));
 }
 
 function displayQuizzes(quizzesData) {
     const quizzesList = document.getElementById('quizzes-list');
-    quizzesList.innerHTML = ''; // เคลียร์เนื้อหาที่มีอยู่ใน quizzesList ก่อนที่จะเพิ่มบททดสอบใหม่
+    quizzesList.innerHTML = '';
 
     quizzesData.forEach(quiz => {
         const quizElement = document.createElement('div');
@@ -30,7 +30,7 @@ function displayQuizzes(quizzesData) {
         const startButton = document.createElement('button');
         startButton.textContent = 'Start Quiz';
         startButton.addEventListener('click', () => {
-            startQuiz(quiz.quiz_id); // เมื่อคลิกปุ่ม Start Quiz จะเรียกฟังก์ชัน startQuiz
+            startQuiz(quiz.quiz_id); 
         });
         quizElement.appendChild(startButton);
 
@@ -39,6 +39,4 @@ function displayQuizzes(quizzesData) {
 }
 
 function startQuiz(quizId) {
-    // เพิ่มโค้ดสำหรับเริ่มทำบททดสอบ ในที่นี้คุณอาจจะนำผู้ใช้ไปยังหน้าบททดสอบที่เกี่ยวข้องหรือทำการตรวจสอบในที่นี้
-    // คุณสามารถเพิ่มการดำเนินการเพิ่มเติมได้ตามความต้องการ
 }

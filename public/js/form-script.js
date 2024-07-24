@@ -16,20 +16,19 @@ function addChoice(button) {
     const newAnswerBtn = document.createElement('button');
     newAnswerBtn.type = 'button';
     newAnswerBtn.classList.add('answer-btn');
-    newAnswerBtn.textContent = 'False'; // Default value for new choice
-    newAnswerBtn.setAttribute('data-is-correct', 'false'); // Default is false
+    newAnswerBtn.textContent = 'False';
+    newAnswerBtn.setAttribute('data-is-correct', 'false');
 
     newAnswerBtn.addEventListener('click', function() {
         const isCorrect = this.getAttribute('data-is-correct') === 'true';
 
-        // Update UI (optional)
+        
         choicesContainer.querySelectorAll('.answer-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
         this.classList.add('selected');
 
-        // Optionally handle logic to set correct answer in data
-        // Example: Update data model or UI based on user selection
+        
         console.log(`Selected answer is correct: ${isCorrect}`);
     });
 
@@ -52,8 +51,7 @@ function deleteChoice(button) {
 }
 
 function addQuestion() {
-    // Add logic to dynamically add questions (if needed)
-    // Example: Create new DOM elements for another question
+    
 }
 
 function submitForm() {
@@ -61,7 +59,7 @@ function submitForm() {
     const formData = new FormData(form);
     const questions = [];
 
-    // Build questions array with answers
+    
     formData.forEach((value, key) => {
         const [prefix, questionId, choiceId] = key.split('_');
 
@@ -77,7 +75,7 @@ function submitForm() {
             } else if (choiceId) {
                 questions[questionIndex].choices.push({
                     choice_text: value,
-                    is_correct: false // Default to false
+                    is_correct: false
                 });
             }
         }

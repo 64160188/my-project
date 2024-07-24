@@ -1,5 +1,3 @@
-// public/js/cart-script.js
-
 function filterCategory(category) {
     let products = document.querySelectorAll('.product-item');
     products.forEach(product => {
@@ -15,5 +13,5 @@ function filterCategory(category) {
     });
 }
 
-// เริ่มต้นให้แสดงสินค้าทั้งหมด
+
 filterCategory('all');

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Lesson</title>
+    <title>Add New Test</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="website icon" type="png" href="images/logo.png">
 </head>
 <body>
     <!-- header -->
@@ -37,19 +38,18 @@
     </header>
     <!-- end header -->
 
-
     <main>
-        <h1>Add New Lesson and Questions</h1>
-        <form id="lessonForm" action="/addLessonAndQuestions" method="POST" enctype="multipart/form-data">
-            <h2>Add New Lesson</h2>
-            <label for="lesson_name">ชื่อบทเรียน:</label>
-            <input type="text" id="lesson_name" name="lesson_name" required><br><br>
+        <h1>Add New Test and Questions</h1>
+        <form id="testForm" action="/addTestAndQuestions" method="POST" enctype="multipart/form-data">
+            <h2>Add New Test</h2>
+            <label for="test_name">ชื่อบทเรียน:</label>
+            <input type="text" id="test_name" name="test_name" required><br><br>
         
-            <label for="lesson_description">คำอธิบาย:</label><br>
-            <textarea id="lesson_description" name="lesson_description" rows="4" cols="50" required></textarea><br><br>
+            <label for="test_description">คำอธิบาย:</label><br>
+            <textarea id="test_description" name="test_description" rows="4" cols="50" required></textarea><br><br>
         
-            <label for="lesson_image">รูปภาพบทเรียน:</label>
-            <input type="file" id="lesson_image" name="lesson_image" accept="image/*" required><br><br>
+            <label for="test_image">รูปภาพบทเรียน:</label>
+            <input type="file" id="test_image" name="test_image" accept="image/*" required><br><br>
             
             <div id="questions-container">
                 <div class="question" data-question-number="1">
@@ -76,13 +76,13 @@
                 </div>
             </div>
         
-            <!-- เพิ่มปุ่มและปรับปรุงแบบฟอร์ม -->
+            
             <button type="button" onclick="addQuestion()">เพิ่มคำถาม</button><br><br>
             <button type="submit">เพิ่มบทเรียน</button>
         </form>
-        <a href="/successPage">Add Lesson successPage</a>
+        
 
-        <script src="/js/addLesson-script.js"></script>
+        <script src="/js/addTest-script.js"></script>
     </main>
 </body>
 </html>

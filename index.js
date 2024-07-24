@@ -38,14 +38,14 @@ app.use(session({
 }));
 
 const storage = multer.diskStorage({
-    destination: path.join(__dirname, 'public/uploads'), // Update destination folder here
+    destination: path.join(__dirname, 'public/uploads'), 
     filename: function(req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
 
 
-// ตรวจสอบประเภทไฟล์
+
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -57,7 +57,7 @@ function checkFileType(file, cb) {
     }
 }
 
-// ตั้งค่า Multer
+
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },
@@ -66,10 +66,10 @@ const upload = multer({
     }
 }).single('test_image');
 
-// Routes
 app.get('/add-test', (req, res) => {
     res.render('pages/add-test');
 });
+
 
 
 app.post('/addTestAndQuestions', (req, res) => {
@@ -84,7 +84,7 @@ app.post('/addTestAndQuestions', (req, res) => {
             return res.status(500).json({ success: false, message: 'Error uploading file' });
         }
 
-        const { test_name, test_description } = req.body;
+        const { test_name, test_description, questions, answers, correct_choices } = req.body;
         const test_image = req.file ? req.file.filename : 'default.jpg';
 
         const sql = 'INSERT INTO tests (name, description, image) VALUES (?, ?, ?)';
@@ -94,26 +94,20 @@ app.post('/addTestAndQuestions', (req, res) => {
                 return res.status(500).json({ success: false, message: 'Error adding test' });
             }
 
-            const testId = testResult.insertId; // เปลี่ยนเป็น testResult.insertId
+            const testId = testResult.insertId;
 
-            // Prepare questions data
-            const questions = req.body.questions;
-            const answers = req.body.answers;
-            const correctChoices = req.body.correct_choices;
-            
             const questionData = questions.map((question, index) => [
                 question,
                 answers[index * 4],
                 answers[index * 4 + 1],
                 answers[index * 4 + 2],
                 answers[index * 4 + 3],
-                correctChoices[index],
+                correct_choices[index],
                 testId
             ]);
-            
+
             const questionSql = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, test_id) VALUES ?';
             
-            // Insert questions into database
             connection.query(questionSql, [questionData], (err, questionResult) => {
                 if (err) {
                     console.error('Error inserting questions:', err);
@@ -122,7 +116,6 @@ app.post('/addTestAndQuestions', (req, res) => {
             
                 res.json({ success: true, testId: testId, message: 'Test and questions added successfully' });
             });
-            
         });
     });
 });
@@ -194,7 +187,7 @@ app.get('/products', (req, res) => {
 app.get('/questions/:id', (req, res) => {
     const testId = req.params.id;
 
-    // ดึงข้อมูลจากตาราง tests
+    
     connection.query('SELECT * FROM tests WHERE test_id = ?', [testId], (err, testResults) => {
         if (err) {
             console.error('Error fetching test:', err);
@@ -209,7 +202,7 @@ app.get('/questions/:id', (req, res) => {
 
         const test = testResults[0];
 
-        // ดึงข้อมูลคำถามจากตาราง questions
+        
         connection.query('SELECT * FROM questions WHERE test_id = ?', [testId], (err, questionResults) => {
             if (err) {
                 console.error('Error fetching questions:', err);
@@ -224,8 +217,8 @@ app.get('/questions/:id', (req, res) => {
 
 app.post('/submit-quiz/:testId', (req, res) => {
     const testId = req.params.testId;
-    const userAnswers = req.body; // คำตอบที่ส่งมาจากฟอร์ม
-
+    const userAnswers = req.body; 
+    
     connection.query('SELECT * FROM questions WHERE test_id = ?', [testId], (err, questions) => {
         if (err) {
             console.error('Error fetching questions:', err);
@@ -253,22 +246,22 @@ app.post('/submit-quiz/:testId', (req, res) => {
 
 
 
-// Example route to render the homepage
+
 app.get('/', (req, res) => {
     res.render('pages/index');
 });
 
-// Example route to render the quiz page
+
 app.get('/quiz', (req, res) => {
     res.render('pages/quiz');
 });
 
-// Example route to render the questions page
+
 app.get('/questions', (req, res) => {
     res.render('pages/questions');
 });
 
-// Example route to handle POST request to add a new test
+
 app.post('/addTest', (req, res) => {
     const { name, description, image } = req.body;
     const sql = 'INSERT INTO tests (name, description, image) VALUES (?, ?, ?)';
@@ -278,12 +271,12 @@ app.post('/addTest', (req, res) => {
             res.status(500).send('Failed to add new test');
         } else {
             console.log('New test added successfully');
-            res.redirect('/tests'); // Redirect back to tests page or wherever appropriate
+            res.redirect('/tests'); 
         }
     });
 });
 
-// Start the server
+
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
