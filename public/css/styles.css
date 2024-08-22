@@ -309,11 +309,11 @@ section.grid {
     gap: 1rem;
 }
 
-article {
-    border: 1px solid #ccc;
-    padding: 1rem;
-    text-align: center;
-}
+    article {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        text-align: center;
+    }
 
 
 

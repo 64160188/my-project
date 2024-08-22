@@ -45,3 +45,17 @@ article img {
     height: auto; /* คงสัดส่วนของภาพ */
     border-radius: 10px;
 }
+
+
+
+
+article img {
+    object-fit: cover   ;
+    transition: transform 0.2s;
+    height: 50%;
+    vertical-align: middle;
+}
+
+article:hover img {
+    transform: scale(1.5);
+}

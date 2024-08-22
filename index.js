@@ -6,7 +6,8 @@ const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const router = express.Router();
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const app = express();
 
@@ -34,7 +35,8 @@ connection.connect((error) => {
 app.use(session({
     secret: "secret",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { secure: false }
 }));
 
 const storage = multer.diskStorage({
@@ -69,6 +71,7 @@ const upload = multer({
 app.get('/add-test', (req, res) => {
     res.render('pages/add-test');
 });
+
 
 
 
@@ -158,8 +161,10 @@ app.get('/tests/:id', (req, res) => {
 });
 
 
-
 app.get('/tests', (req, res) => {
+    console.log('User in session:', req.session.user);
+    const user = req.session.user || null;
+
     const sql = 'SELECT * FROM tests';
     connection.query(sql, (err, results) => {
         if (err) {
@@ -167,22 +172,25 @@ app.get('/tests', (req, res) => {
             res.status(500).send('Internal Server Error');
             return;
         }
-        res.render('pages/tests', { tests: results });
+        res.render('pages/tests', { tests: results, user });
     });
 });
 
 
 
 app.get('/products', (req, res) => {
+    const user = req.session.user || null;
+
     connection.query("SELECT * FROM products", (err, result) => {
         if (err) {
             console.error('Error fetching products: ', err);
             res.status(500).send('Internal Server Error');
         } else {
-            res.render('pages/products', { products: result });
+            res.render('pages/products', { products: result, user: user });
         }
     });
 });
+
 
 app.get('/questions/:id', (req, res) => {
     const testId = req.params.id;
@@ -248,8 +256,14 @@ app.post('/submit-quiz/:testId', (req, res) => {
 
 
 app.get('/', (req, res) => {
-    res.render('pages/index');
+    res.render('pages/index', { user: req.session.userId });
 });
+
+
+app.get('/login', (req, res) => {
+    res.render('pages/login', { user: req.session.userId });
+});
+
 
 
 app.get('/quiz', (req, res) => {
@@ -259,6 +273,10 @@ app.get('/quiz', (req, res) => {
 
 app.get('/questions', (req, res) => {
     res.render('pages/questions');
+});
+
+app.get('/sign_up', (req, res) => {
+    res.render('pages/sign_up');
 });
 
 
@@ -275,6 +293,173 @@ app.post('/addTest', (req, res) => {
         }
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get('/login', (req, res) => {
+    const user = req.session.user || null;
+    res.render('pages/login', { user: user });
+});
+
+
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    const sql = 'SELECT * FROM users WHERE username = ?';
+    connection.query(sql, [username], (err, results) => {
+        if (err) {
+            console.error('Error querying user:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        if (results.length > 0) {
+            const user = results[0];
+            bcrypt.compare(password, user.password, (err, isMatch) => {
+                if (err) {
+                    console.error('Error comparing passwords:', err);
+                    return res.status(500).send('Internal Server Error');
+                }
+
+                if (isMatch) {
+                    req.session.userId = user.id;
+                    req.session.user = user; 
+                    return res.redirect('/');
+                } else {
+                    return res.status(401).send('Incorrect password');
+                }
+            });
+        } else {
+            return res.status(404).send('User not found'); 
+        }
+    });
+});
+
+
+function checkLogin(req, res, next) {
+    if (req.cookies.user_sid && req.session.userId) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+app.get('/', checkLogin, (req, res) => {
+    res.send('/index');
+});
+
+app.get('/tests', checkLogin, (req, res) => {
+    res.send('/tests');
+});
+
+
+
+app.post('/signup', (req, res) => {
+    const { username, email, password } = req.body;
+
+    
+    if (!username || !email || !password) {
+        return res.status(400).send('Please provide all required fields: username, email, and password');
+    }
+
+    
+    const checkSql = 'SELECT * FROM users WHERE username = ? OR email = ?';
+    connection.query(checkSql, [username, email], (err, results) => {
+        if (err) {
+            console.error('Error checking user:', err);
+            return res.status(500).send('Error checking user');
+        }
+
+        if (results.length > 0) {
+            return res.status(400).send('Username or email already in use');
+        }
+
+        
+        bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password:', err);
+                return res.status(500).send('Error signing up');
+            }
+
+            
+            const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)';
+            const values = [username, email, hashedPassword, 'student'];
+
+            connection.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error('Error inserting user:', err);
+                    return res.status(500).send('Error signing up');
+                }
+
+                
+                req.session.userId = result.insertId;
+                res.redirect('/complete-profile');
+            });
+        });
+    });
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.status(500).send('Error logging out');
+        }
+        res.redirect('/');
+    });
+});
+
+
+app.get('/complete-profile', (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect('/signup');
+    }
+    res.render('pages/complete-profile');
+});
+
+
+
+app.post('/complete-profile', (req, res) => {
+    const { address, phone } = req.body;
+    const userId = req.session.userId;
+
+    if (!address || !phone) {
+        return res.status(400).send('Please provide all required information');
+    }
+
+    const sql = 'UPDATE users SET address = ?, phone = ? WHERE id = ?';
+    connection.query(sql, [address, phone, userId], (err, result) => {
+        if (err) {
+            console.error('Error updating user profile:', err);
+            return res.status(500).send('Error updating profile');
+        }
+        res.redirect('/profile');
+    });
+});
+
+app.get('/', (req, res) => {
+    res.render('index', { user: req.user });
+});
+
+
+
+
+
+
+
+
+
 
 
 app.listen(3000, () => {

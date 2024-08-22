@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="website icon" type="png" href="images/logo.png">
 </head>
-
 <body>
     <!-- Header -->
     <header>
@@ -26,15 +25,20 @@
                             <li><a href="/submit-quiz">ตัวอักษร</a></li>
                             <li><a href="/questions">บทเรียน</a></li>
                             <li><a href="/tests">Quiz</a></li>
-                            <li><a href="/tests">ทดสอบบทเรียน</a></li>
-                            <li><a href="/quizzes">quizzes.ejs</a></li>
-                            <li><a href="#"><img src="images/Login.png" alt="Login"></a></li>
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                            <% } else { %>
+                                <li><a id="login-link" href="/login">Sign In</a></li>
+                                <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a></li>
+                            <% } %>
                         </ul>
                     </nav>
                 </div>
             </div>
         </div>
     </header>
+    
     <!-- End Header -->
 
     <!-- Translation Section -->
