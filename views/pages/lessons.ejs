@@ -1,0 +1,70 @@
+<!-- lessons.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Lessons</title>
+    <link rel="stylesheet" href="/css/test-styles.css"> 
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" type="image/png" href="images/logo.png">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/submit-quiz">ตัวอักษร</a></li>
+                            <li><a href="/questions">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                            <% } else { %>
+                                <li><a id="login-link" href="/login">Sign In</a></li>
+                                <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a></li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- End Header -->
+
+
+    
+    <main class="container">
+        <a href="/add-lesson">Add lesson</a>
+        <section class="grid">
+            <% lessons.forEach(lesson => { %>
+                <article>
+                    <h2><%= lesson.title %></h2>
+                    <img src="/images/<%= lesson.image %>" alt="Lesson Image">
+                    <p><%= lesson.description %></p>
+                    <a href="/lessons/<%= lesson.lesson_id %>">View Lesson</a>
+                </article>
+            <% }); %>            
+        </section>
+    </main>
+    
+    <script src="/js/addTest-script.js"></script>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Your Website Name</p>
+    </footer>
+    <!-- End Footer -->
+</body>
+</html>

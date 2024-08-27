@@ -279,6 +279,34 @@ app.get('/sign_up', (req, res) => {
     res.render('pages/sign_up');
 });
 
+app.get('/lessons', (req, res) => {
+    const sql = 'SELECT * FROM lessons';
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching lessons: ', err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            res.render('pages/lessons', { lessons: results, user: req.session.user });
+        }
+    });
+});
+
+
+app.get('/lessons/:id', (req, res) => {
+    const lessonId = parseInt(req.params.id);
+    connection.query('SELECT * FROM lessons WHERE lesson_id = ?', [lessonId], (err, result) => {
+        if (err) {
+            console.error('Error fetching lesson: ', err);
+            res.status(500).send('Internal Server Error');
+        } else if (result.length > 0) {
+            res.render('pages/lesson-detail', { lesson: result[0] });
+        } else {
+            res.status(404).send('Lesson not found');
+        }
+    });
+});
+
+
 
 app.post('/addTest', (req, res) => {
     const { name, description, image } = req.body;

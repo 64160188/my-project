@@ -1,0 +1,96 @@
+.lesson-detail {
+    background: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.lesson-detail h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.lesson-detail .lesson-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.lesson-detail .lesson-description {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+
+.tabs {
+    display: flex;
+    margin-top: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab {
+    padding: 10px;
+    cursor: pointer;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    background: #f0f0f0;
+    border-radius: 5px 5px 0 0;
+    transition: background 0.3s;
+}
+
+.tab.active {
+    background: #fff;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 0 0 5px 5px;
+    border-top: none;
+    background: #fff;
+    margin-top: -1px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.navigation-links {
+    margin-top: 20px;
+    padding: 10px 0;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.navigation-links a {
+    margin: 0 10px;
+    padding: 10px 20px;
+    background: #007BFF;
+    color: #fff;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.navigation-links a:hover {
+    background: #0056b3;
+}
+
+/* Footer */
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 40px;
+}
+
+footer p {
+    margin: 0;
+}
