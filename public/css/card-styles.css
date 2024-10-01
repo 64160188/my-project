@@ -1,0 +1,51 @@
+
+.card-container {
+    text-align: center;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+    max-width: 400px;
+}
+
+.card-header h3 {
+    margin: 0;
+}
+
+.card-body {
+    margin: 10px 0;
+}
+
+.card-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.nav-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.nav-btn:hover {
+    background-color: #0056b3;
+}
+
+.practice-btn {
+    margin-top: 10px;
+}
+

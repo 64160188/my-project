@@ -23,7 +23,7 @@
                             <ul class="menu-area-main">
                                 <li><a href="/">Home</a></li>
                                 <li><a href="/product">อุปกรณ์การเรียน</a></li>
-                                <li><a href="brand">ตัวอักษร</a></li>
+                                <li><a href="/brand">ตัวอักษร</a></li>
                                 <li><a href="/questions">บทเรียน</a></li>
                                 <li class="active"><a href="/quiz">Quiz</a></li>
                                 <li class="login"><a href="#"><img src="/images/Login.png" alt="Login"></a></li>
@@ -35,8 +35,6 @@
         </div>
     </header>
 
-
-    <!-- Main Content -->
     <main>
         <section class="lesson-detail">
             <div class="container">
@@ -62,48 +60,103 @@
 
         <section class="tab-content-section">
             <div class="container">
-                <div id="characters" class="tab-content active">
-                    <h2>ตัวอักษร</h2>
-                    <p>เนื้อหาที่เกี่ยวข้องกับตัวอักษรที่ใช้ในบทเรียนนี้...</p>
-                </div>
-
-                <div id="conversation" class="tab-content">
-                    <h2>บทสนทนา</h2>
-                    <p>เนื้อหาที่เกี่ยวข้องกับบทสนทนาในการเรียนรู้...</p>
-                </div>
-
-                <div id="practice" class="tab-content">
-                    <h2>การฝึกฝน</h2>
-                    <p>เนื้อหาที่เกี่ยวข้องกับการฝึกฝนทักษะภาษาญี่ปุ่น...</p>
+                <div id="tab-content-container">
+                    <!-- เนื้อหาจะถูกโหลดที่นี่ -->
+                    <div class="loading-message">กรุณารอ...</div> <!-- Loading message -->
                 </div>
             </div>
         </section>
 
         <section class="navigation-links">
             <div class="container">
-                <a href="/questions">Back to Lessons</a>
+                <a href="/lessons">Back to Lessons</a>
                 <a href="/questions/<%= lesson.lesson_id %>">View Questions</a>
             </div>
         </section>
     </main>
-    <!-- End Main Content -->
-
     
     <footer>
         <p>ร้านขายสินค้า &copy; 2024</p>
     </footer>
 
+    
+
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const initialTab = document.querySelector('.tab.active');
+            if (initialTab) {
+                loadTabContent(initialTab);
+            }
+        });
+    
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
-
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+                loadTabContent(this);
             });
         });
+    
+        function loadTabContent(tab) {
+            const tabContentContainer = document.getElementById('tab-content-container');
+            tabContentContainer.innerHTML = '<div class="loading-message">กรุณารอ...</div>';
+            
+            const tabType = tab.getAttribute('data-tab');
+            const lessonId = '<%= lesson.lesson_id %>';
+            
+            fetch(`/lessons/${lessonId}/content?type=${tabType}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let content = '';
+                    if (tabType === 'characters') {
+                        content = data.map(item => `
+                            <div>
+                                <strong>${item.character_name}</strong>: ${item.description}
+                            </div>
+                        `).join('');
+                    } else if (tabType === 'conversation') {
+                        let conversations = {};
+                        data.forEach(item => {
+                            if (!conversations[item.conversation_title]) {
+                                conversations[item.conversation_title] = [];
+                            }
+                            conversations[item.conversation_title].push(item);
+                        });
+    
+                        content = Object.keys(conversations).map(title => `
+                            <div class="conversation">
+                                <h3>${title}</h3>
+                                <div class="conversation-lines">
+                                    ${conversations[title].map(line => `
+                                        <div class="line">
+                                            <div class="line-content ${line.character_id === 1 ? 'left' : 'right'}">
+                                                <strong>${line.character_name}:</strong>
+                                                <p>${line.content}</p>
+                                                <p class="romaji">${line.romaji}</p>
+                                                <p class="translation">${line.translation}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('');
+                    } else if (tabType === 'practice') {
+                        content = '<div>Practice content goes here.</div>';
+                    }
+                    tabContentContainer.innerHTML = content;
+                })
+                .catch(error => {
+                    console.error('Error loading content:', error);
+                    tabContentContainer.innerHTML = '<div class="error-message">ไม่สามารถโหลดเนื้อหาได้ กรุณาลองใหม่อีกครั้ง</div>';
+                });
+        }
     </script>
-
+    
+    
 </body>
 </html>

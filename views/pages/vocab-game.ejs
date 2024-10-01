@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocab Matching Game</title>
+    <link rel="stylesheet" href="/css/cardg-styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <li><a href="/vocab">vocab</a></li>
+                            <li><a href="/vocab-game">vocab-game</a></li>
+
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                                <% } else { %>
+                                    <li><a id="login-link" href="/login">Sign In</a></li>
+                                    <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png"
+                                                alt="Sign Up"></a></li>
+                                    <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="question-container">
+        <h2>เลือกภาพที่ตรงกับคำว่า: <%= correctVocab.japanese_word %></h2>
+        <div class="image-options" id="image-container">
+            <!-- จะเพิ่มภาพลงใน DOM ที่นี่ -->
+        </div>
+    </div>
+
+    <script>
+        
+        const correctVocab = <%- JSON.stringify(correctVocab) %>;
+        const randomVocab = <%- JSON.stringify(randomVocab) %>;
+
+        
+        const images = [correctVocab, randomVocab];
+        images.sort(() => Math.random() - 0.5);
+
+        
+        const container = document.getElementById('image-container');
+        images.forEach((vocab) => {
+            const imageBox = document.createElement('div');
+            imageBox.className = 'image-box';
+            imageBox.onclick = () => checkAnswer(vocab.id === correctVocab.id);
+
+            const img = document.createElement('img');
+            img.src = `/images/${vocab.image}`;
+            img.alt = `${vocab.japanese_word} image`;
+            imageBox.appendChild(img);
+
+            container.appendChild(imageBox);
+        });
+
+        function checkAnswer(isCorrect) {
+            if (isCorrect) {
+                alert('ถูกต้อง! ' + correctVocab.japanese_word + ' คือคำที่ถูกต้อง');
+            } else {
+                alert('ไม่ถูกต้อง ลองใหม่อีกครั้ง!');
+            }
+        }
+    </script>
+</body>
+
+</html>

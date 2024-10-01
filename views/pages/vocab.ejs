@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chan pe</title>
+    <link rel="stylesheet" href="/css/card-styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="website icon" type="png" href="images/logo.png">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <li><a href="/vocab">vocab</a></li>
+                            <li><a href="/vocab-game">vocab-game</a></li>
+
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                                <% } else { %>
+                                    <li><a id="login-link" href="/login">Sign In</a></li>
+                                    <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png"
+                                                alt="Sign Up"></a></li>
+                                    <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="card-container">
+        <% if (vocabularies && vocabularies.length > 0) { %>
+            <div class="card" id="vocab-card">
+                <% const vocab = vocabularies[0]; %>
+                <div class="card-header">
+                    <h3><%= vocab.japanese_word %></h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Reading:</strong> <span id="reading-text"><%= vocab.reading %></span></p>
+                    <p><strong>Translation:</strong> <span id="translation-text"><%= vocab.translation %></span></p>
+                    <img src="/images/<%= vocab.image %>" alt="<%= vocab.japanese_word %> image" class="card-image" id="vocab-image">
+                </div>
+                
+              <!--  <div class="card-body">
+                    <p><strong>Reading:</strong> <span><%= vocab.reading %></span></p>
+                    <p><strong>Translation:</strong> <span><%= vocab.translation %></span></p>
+                    <img src="/images/<%= vocab.image %>" alt="<%= vocab.japanese_word %> image" class="card-image">
+                    
+                     <% if (vocab.image) { %>
+                        <img src="/images/<%= vocab.image %>" alt="<%= vocab.japanese_word %> image" class="card-image">
+                    <% } %> 
+                </div> -->
+                <div class="card-footer">
+                    <button class="practice-btn" onclick="alert('Coming Soon!')">Practice</button>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="nav-btn" onclick="changeCard(-1)">◀</button>
+                <button class="nav-btn" onclick="changeCard(1)">▶</button>
+            </div>
+        <% } else { %>
+            <p>No vocabulary available at the moment.</p>
+        <% } %>
+    </div>
+
+    <script>
+        const vocabularies = <%- JSON.stringify(vocabularies) %>;
+        let currentIndex = 0;
+
+        function changeCard(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = vocabularies.length - 1;
+            if (currentIndex >= vocabularies.length) currentIndex = 0;
+            updateCard();
+        }
+        function updateCard() {
+            const vocab = vocabularies[currentIndex];
+            
+            
+            document.querySelector('#vocab-card .card-header h3').innerText = vocab.japanese_word;
+        
+            
+            document.getElementById('reading-text').innerText = vocab.reading;
+            document.getElementById('translation-text').innerText = vocab.translation;
+        
+            
+            const imgElement = document.getElementById('vocab-image');
+            if (vocab.image) {
+                imgElement.src = '/images/' + vocab.image;
+                imgElement.alt = vocab.japanese_word + ' image';
+                imgElement.style.display = 'block';
+            } else {
+                imgElement.style.display = 'none';
+            }
+        }
+        
+        
+    
+        updateCard();
+    </script>
+</body>
+
+</html>

@@ -8,7 +8,7 @@ window.addEventListener('scroll', function() {
 
     if (scrollTop > lastScrollTop) {
         // Scroll down
-        navbar.style.top = '-60px'; // Adjust this value if your navbar height is different
+        navbar.style.top = '-60px';
     } else {
         // Scroll up
         navbar.style.top = '0';

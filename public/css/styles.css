@@ -57,7 +57,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -65,6 +65,7 @@ body {
 .header .logo_section {
     display: flex;
     align-items: center;
+    margin-left: 100px;
 }
 
 .header .menu-area {
@@ -116,58 +117,89 @@ body {
 .product-image img {
     width: 250px;
 }
-/* Existing styles... */
 
-.translation-section {
-    padding: 20px;
-    background-color: #f9f9f9;
+
+
+/* สไตล์ของ container หลัก */
+.translator-container {
+    background-color: white;
+    width: 100%;
+    max-width: 100%;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.translation-section .container {
-    max-width: 1200px;
-    margin: 0 auto;
+/* สไตล์ของหัวข้อ */
+.translator-container h1 {
+    font-size: 2rem;
+    color: #4285f4; /* สีฟ้าแบบ Google */
+    margin-bottom: 20px;
 }
 
-.translation-section h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.translation-controls {
+/* สไตล์ของฟอร์ม */
+.translator-form {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
 }
 
-.translation-controls textarea {
-    width: 40%;
-    height: 100px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
+.translator-form textarea {
+    padding: 15px;
+    margin-bottom: 15px;
     border-radius: 5px;
+    border: 1px solid #ccc;
+    min-height: 100px;
+    font-size: 1rem;
+    resize: vertical;
 }
 
-.translation-controls select, .translation-controls button {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
+.translator-form select, .translator-form button {
+    padding: 15px;
+    margin-bottom: 15px;
     border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+/* ปุ่มแปล */
+.translator-form button {
+    background-color: #4285f4;
+    color: white;
     cursor: pointer;
-}
-
-.translation-controls button {
-    background-color: #333;
-    color: #fff;
+    transition: background-color 0.3s ease;
     border: none;
 }
 
-.translation-controls button:hover {
-    background-color: #555;
+.translator-form button:hover {
+    background-color: #357ae8;
 }
 
+/* สไตล์สำหรับการแปล */
+.translation {
+    background-color: #e8f0fe;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #d1e3fe;
+    margin-top: 20px;
+    font-size: 1.1rem;
+}
+
+.translation h2 {
+    margin-bottom: 10px;
+}
+
+.translation p {
+    color: #202124;
+}
+
+/* สไตล์สำหรับข้อความ error */
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
 /* Scrollable Section Styles */
 .scrollable-section {
     padding: 20px;

@@ -1,5 +1,3 @@
-// form-script.js
-
 function addChoice(button) {
     const choicesContainer = button.parentElement.querySelector('.choices');
     const choiceCount = choicesContainer.children.length;
@@ -81,7 +79,7 @@ function submitForm() {
         }
     });
 
-    // Send questions data to the server
+    
     fetch('/submit-questions', {
         method: 'POST',
         headers: {
@@ -97,27 +95,24 @@ function submitForm() {
     })
     .then(data => {
         console.log('Success:', data);
-        // Handle success response here (e.g., show a success message)
     })
     .catch(error => {
         console.error('Error:', error);
-        // Handle error here (e.g., show an error message)
     });
 }
 
-// Add event listener to answer buttons
+
 document.querySelectorAll('.answer-btn').forEach(button => {
     button.addEventListener('click', () => {
         const isCorrect = button.getAttribute('data-is-correct') === 'true';
 
-        // Update UI (optional)
+        
         document.querySelectorAll('.answer-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
         button.classList.add('selected');
 
-        // Optionally handle logic to set correct answer in data
-        // Example: Update data model or UI based on user selection
+        
         console.log(`Selected answer is correct: ${isCorrect}`);
     });
 });

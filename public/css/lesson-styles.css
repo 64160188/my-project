@@ -94,3 +94,29 @@ footer {
 footer p {
     margin: 0;
 }
+
+.conversation-lines {
+    margin: 10px 0;
+}
+
+.line-content {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.line-content.left {
+    background-color: #f0f8ff;
+    text-align: left;
+}
+
+.line-content.right {
+    background-color: #f8f0ff;
+    text-align: right;
+}
+
+.romaji, .translation {
+    font-style: italic;
+    color: #666;
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chan pe - User Profile</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/profile-styles.css">
+    <link rel="website icon" type="png" href="images/logo.png">
+</head>
+
+<body>
+
+    <header>
+        <div class="header">
+            <div class="container">
+                <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button>
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <li><a href="/vocab">vocab</a></li>
+
+                            <% if (user) { %>
+                                <li><a href="/profile" class="active">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                                <% } else { %>
+                                    <li><a id="login-link" href="/login">Sign In</a></li>
+                                    <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png"
+                                                alt="Sign Up"></a></li>
+                                    <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <h1>User Profile</h1>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'EditProfile')" id="defaultOpen">Profile</button>
+        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'Policies')">Policies</button>
+    </div>
+
+    <div id="EditProfile" class="tabcontent">
+        <% if (user.profile_picture) { %>
+            <h3>แก้ไขโปรไฟล์</h3>
+            <img id="profile_picture" src="/uploads/<%= user.profile_picture %>" alt="Profile Picture">
+            <span class="badge">3</span>
+        <% } else { %>
+            <h3>No Profile Picture Uploaded</h3>
+        <% } %>
+        <form action="/update-profile" method="POST" enctype="multipart/form-data">
+            <label for="username">Name:</label>
+            <input type="text" id="username" name="username" value="<%= user.username %>" required>
+            <br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>" required>
+            <br>
+            <label for="profile_pic">Profile Picture:</label>
+            <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+            <br>
+            <button type="submit">Update Profile</button>
+        </form>
+        
+
+    </div>
+    
+    
+
+    <div id="Settings" class="tabcontent">
+        <h3>Settings</h3>
+        <p>Here you can change your settings.</p>
+    </div>
+
+    <div id="Policies" class="tabcontent">
+        <h3>Policies</h3>
+        <p>Here you can read the policies of the website.</p>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";  
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";  
+            evt.currentTarget.className += " active";
+        }
+
+        document.getElementById("defaultOpen").click();
+    </script>
+
+</body>
+</html>

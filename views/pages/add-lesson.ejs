@@ -1,0 +1,69 @@
+<!-- add-lesson.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Lesson</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/submit-quiz">ตัวอักษร</a></li>
+                            <li><a href="/questions">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                            <% } else { %>
+                                <li><a id="login-link" href="/login">Sign In</a></li>
+                                <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a></li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- End Header -->
+
+    <main class="container">
+        <h1>Add New Lesson</h1>
+        <form action="/lessons/add" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="title">Lesson Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            <div>
+                <label for="image">Image:</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+            </div>
+            <button type="submit">Add Lesson</button>
+        </form>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Your Website Name</p>
+    </footer>
+    <!-- End Footer -->
+</body>
+</html>

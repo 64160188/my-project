@@ -8,6 +8,9 @@ const path = require('path');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const axios =require('axios');
+const {URLSearchParams} = require('url')
+const FormData = require('form-data');
 
 const app = express();
 
@@ -39,13 +42,13 @@ app.use(session({
     cookie: { secure: false }
 }));
 
+
 const storage = multer.diskStorage({
     destination: path.join(__dirname, 'public/uploads'), 
     filename: function(req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
-
 
 
 function checkFileType(file, cb) {
@@ -66,7 +69,16 @@ const upload = multer({
     fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
+});
+
+const uploadImageTest = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: function(req, file, cb) {
+        checkFileType(file, cb);
+    }
 }).single('test_image');
+
 
 app.get('/add-test', (req, res) => {
     res.render('pages/add-test');
@@ -76,7 +88,7 @@ app.get('/add-test', (req, res) => {
 
 
 app.post('/addTestAndQuestions', (req, res) => {
-    upload(req, res, function (err) {
+    uploadImageTest(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             if (err.code === 'LIMIT_FILE_SIZE') {
                 return res.status(400).json({ success: false, message: 'File size is too large. Max limit is 5MB.' });
@@ -256,9 +268,94 @@ app.post('/submit-quiz/:testId', (req, res) => {
 
 
 app.get('/', (req, res) => {
-    res.render('pages/index', { user: req.session.userId });
+    const sql = 'SELECT title, image FROM lessons';
+
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error querying the database:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        
+        const lessons = results;
+
+        
+        res.render('pages/index', { 
+            user: req.session.userId, 
+            lessons: lessons,
+            translation: null, 
+            error: null});
+    });
 });
 
+
+
+
+app.post("/", async (req, res) => {
+    const { text, targetLang } = req.body;
+
+    
+    const data = new FormData();
+    //data.append('source_language', 'en');
+    data.append('target_language', 'th');
+    data.append('source_language', 'ja');
+    //data.append('target_language', targetLang);
+    data.append('text', text);
+
+    const options = {
+        method: 'POST',
+        url: 'https://text-translator2.p.rapidapi.com/translate',
+        headers: {
+            'x-rapidapi-key': '90c9180ba3msh0d293e3f3103817p1bb520jsn21eceb74e1c8',
+            'x-rapidapi-host': 'text-translator2.p.rapidapi.com',
+            ...data.getHeaders()
+        },
+        data: data
+    };
+
+    try {
+        const response = await axios.request(options);
+        const translatedText = response.data.data.translatedText;
+        
+        
+        res.render('pages/index', {
+            user: req.session.userId,
+            lessons: [],
+            translation: translatedText,
+            error: null
+        });
+
+    } catch (error) {
+        console.error('Error fetching translation:', error.message);
+        
+        res.render('pages/index', {
+            user: req.session.userId,
+            lessons: lessons,
+            translation: null,
+            error: "Error fetching data. Please try again."
+        });
+    }
+});
+
+
+
+app.get('/characters', (req, res) => {
+    const hiraganaQuery = 'SELECT * FROM hiragana_characters';
+    connection.query(hiraganaQuery, (err, hiraganaResults) => {
+        if (err) throw err;
+
+        const katakanaQuery = 'SELECT * FROM katakana_characters';
+        connection.query(katakanaQuery, (err, katakanaResults) => {
+            if (err) throw err;
+
+            res.render('pages/characters', {
+                hiragana: hiraganaResults,
+                katakana: katakanaResults,
+                user: req.session.userId
+            });
+        });
+    });
+});
 
 app.get('/login', (req, res) => {
     res.render('pages/login', { user: req.session.userId });
@@ -299,12 +396,144 @@ app.get('/lessons/:id', (req, res) => {
             console.error('Error fetching lesson: ', err);
             res.status(500).send('Internal Server Error');
         } else if (result.length > 0) {
-            res.render('pages/lesson-detail', { lesson: result[0] });
+            const tabType = req.query.tab || 'characters';
+            res.render('pages/lesson-detail', { lesson: result[0], tab: tabType });
         } else {
             res.status(404).send('Lesson not found');
         }
     });
 });
+
+
+
+app.get('/lessons/:id/content', (req, res) => {
+    const lessonId = parseInt(req.params.id, 10);
+    const type = req.query.type;
+
+    let sql;
+    let params = [lessonId];
+
+    switch (type) {
+        case 'characters':
+            sql = 'SELECT * FROM characters WHERE lesson_id = ?';
+            break;
+        case 'conversation':
+            sql = `
+                SELECT 
+                    c.title AS conversation_title, 
+                    l.character_id, 
+                    ch.character_name, 
+                    l.content, 
+                    l.romaji, 
+                    l.translation 
+                FROM conversations c
+                JOIN conversation_lines l ON c.id = l.conversation_id
+                JOIN characters ch ON l.character_id = ch.id
+                WHERE c.lesson_id = ?
+                ORDER BY l.id`;
+            break;
+        case 'practice':
+            sql = 'SELECT * FROM practices WHERE lesson_id = ?';
+            break;
+        default:
+            return res.status(400).send('Invalid tab type');
+    }
+
+    connection.query(sql, params, (err, results) => {
+        if (err) {
+            console.error('Error fetching content: ', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        res.json(results);
+    });
+});
+
+
+
+
+app.get('/add-lesson', (req, res) => {
+    res.render('add-lesson', { user: req.session.user });
+});
+app.post('/lessons/add', (req, res) => {
+    uploadLesson(req, res, (err) => {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+
+        const { title, description } = req.body;
+        const image = req.file ? req.file.filename : 'default.jpg';
+
+        const sql = 'INSERT INTO lessons (title, description, image, created_by) VALUES (?, ?, ?, ?)';
+        connection.query(sql, [title, description, image, req.session.userId], (err, result) => {
+            if (err) {
+                console.error('Error adding lesson:', err);
+                return res.status(500).send('Error adding lesson');
+            }
+            res.redirect('/lessons');
+        });
+    });
+});
+
+app.get('/vocab', (req, rexs) => {
+    const sql = 'SELECT `id`, `japanese_word`, `reading`, `translation`, `image` FROM `vocab`';
+    
+    
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching vocabularies: ', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        
+        res.render('pages/vocab', { vocabularies: results ,user: req.session.userId});
+    });
+});
+
+app.get('/vocab-game', (req, res) => {
+    const query = 'SELECT * FROM vocab';
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error fetching vocab');
+        }
+
+        
+        if (results.length < 2) {
+            return res.status(400).send('Not enough vocab entries');
+        }
+
+        
+        const correctVocab = results[Math.floor(Math.random() * results.length)];
+        let randomVocab;
+        do {
+            randomVocab = results[Math.floor(Math.random() * results.length)];
+        } while (randomVocab.id === correctVocab.id);
+
+        
+        res.render('pages/vocab-game', { correctVocab, randomVocab, user: req.session.userId });
+    });
+});
+
+
+
+/*
+app.get('/cardmatc', (req, res) => {
+    const sql = 'SELECT `id`, `japanese_word`, `reading`, `translation`, `image` FROM `vocab`';
+    
+    
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching vocabularies: ', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        
+        res.render('pages/cardmatc', { vocabularies: results ,user: req.session.userId});
+    });
+});
+*/
+
 
 
 
@@ -483,8 +712,50 @@ app.get('/', (req, res) => {
 
 
 
+app.get('/profile', (req, res) => {
+    const userId = req.session.userId; 
+    if (!userId) {
+        return res.redirect('/login');
+    }
 
+    connection.query('SELECT * FROM users WHERE id = ?', [userId], (err, result) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Database query error');
+        }
+        if (result.length === 0) {
+            return res.status(404).send('User not found');
+        }
+        res.render('pages/profile', { user: result[0] });
+    });
+});
 
+app.post('/update-profile', upload.single('profile_pic'), (req, res) => {
+    const userId = req.session.userId;
+    const { username, email } = req.body;
+    let profilePicture = req.file ? `${req.file.filename}` : null;
+
+    connection.query('SELECT profile_picture FROM users WHERE id = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching current profile picture:', err);
+            return res.status(500).send('Error fetching current profile picture');
+        }
+
+        if (!profilePicture) {
+            profilePicture = results[0].profile_picture;
+        }
+
+        
+        connection.query('UPDATE users SET username = ?, email = ?, profile_picture = ? WHERE id = ?',
+            [username, email, profilePicture, userId], (err, result) => {
+                if (err) {
+                    console.error('Database update error:', err);
+                    return res.status(500).send('Database update error');
+                }
+                res.redirect('/profile');
+            });
+    });
+});
 
 
 
