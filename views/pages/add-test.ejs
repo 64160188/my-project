@@ -5,40 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Test</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/add-card-test-styles.css">
     <link rel="website icon" type="png" href="images/logo.png">
 </head>
 <body>
-    <!-- header -->
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="/"><img src="/images/logo.png" alt="#"></a>
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
-                    <div class="limit-box">
-                        <nav class="main-menu">
-                            <ul class="menu-area-main">
-                                <li class="active"><a href="/">Home</a></li>
-                                <li class="active"><a href="/cart">อุปกรณ์การเรียน</a></li>
-                                <li class="active"><a href="/character">ตัวอักษร</a></li>
-                                <li class="active"><a href="/learn">บทเรียน</a></li>
-                                <li class="active"><a href="/quiz">Quiz</a></li>
-                                <li class="login">
-                                    <a href="#"><img src="/images/Login.png" alt="Login" /></a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
                 </div>
             </div>
         </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
     </header>
-    <!-- end header -->
+
 
     <main>
+    <div class="form-container">
+
         <h1>Add New Test and Questions</h1>
         <form id="testForm" action="/addTestAndQuestions" method="POST" enctype="multipart/form-data">
             <h2>Add New Test</h2>
@@ -54,23 +71,23 @@
             <div id="questions-container">
                 <div class="question" data-question-number="1">
                     <label for="question_1">คำถาม 1</label>
-                    <input type="text" id="question_1" name="questions[]" required>
+                    <input type="text" placeholder="คำถาม" id="question_1" name="questions[]" required>
                     <br><br>
                     <label>ตัวเลือก:</label><br>
                     <input type="text" id="answer_1_1" name="answers[]" required>
-                    <input type="radio" id="correct_1_1" name="correct_choices[0]" value="1" required>
+                    <input type="radio" placeholder="คำตอบ 1" id="correct_1_1" name="correct_choices[0]" value="1" required>
                     <label for="correct_1_1">คำตอบที่ถูกต้อง</label>
                     <br><br>
                     <input type="text" id="answer_1_2" name="answers[]" required>
-                    <input type="radio" id="correct_1_2" name="correct_choices[0]" value="2" required>
+                    <input type="radio" placeholder="คำตอบ 2" id="correct_1_2" name="correct_choices[0]" value="2" required>
                     <label for="correct_1_2">คำตอบที่ถูกต้อง</label>
                     <br><br>
                     <input type="text" id="answer_1_3" name="answers[]" required>
-                    <input type="radio" id="correct_1_3" name="correct_choices[0]" value="3" required>
+                    <input type="radio" placeholder="คำตอบ 3" id="correct_1_3" name="correct_choices[0]" value="3" required>
                     <label for="correct_1_3">คำตอบที่ถูกต้อง</label>
                     <br><br>
                     <input type="text" id="answer_1_4" name="answers[]" required>
-                    <input type="radio" id="correct_1_4" name="correct_choices[0]" value="4" required>
+                    <input type="radio" placeholder="คำตอบ 4" id="correct_1_4" name="correct_choices[0]" value="4" required>
                     <label for="correct_1_4">คำตอบที่ถูกต้อง</label>
                     <br><br>
                 </div>
@@ -81,7 +98,7 @@
             <button type="submit">เพิ่มบทเรียน</button>
         </form>
         
-
+    </div>
         <script src="/js/addTest-script.js"></script>
     </main>
 </body>

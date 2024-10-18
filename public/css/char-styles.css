@@ -35,9 +35,34 @@
 
 
 .grid-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.normal-characters, .dakuten-characters, .yoon-characters {
+    width: 32%;
+}
+
+.grid-inner {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 10px;
+}
+
+.normal-characters {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.dakuten-characters {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.yoon-characters {
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .card {

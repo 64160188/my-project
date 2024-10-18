@@ -1,49 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= lesson.title %> - Lesson Detail</title>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/lesson-styles.css">
-    <link rel="icon" type="image/png" href="/images/logo.png"> 
+    <link rel="icon" type="image/png" href="/images/logo.png">
 </head>
+
 <body>
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="/images/logo.png" alt="Logo"></a>
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
-                    <div class="limit-box">
-                        <nav class="main-menu">
-                            <ul class="menu-area-main">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/product">อุปกรณ์การเรียน</a></li>
-                                <li><a href="/brand">ตัวอักษร</a></li>
-                                <li><a href="/questions">บทเรียน</a></li>
-                                <li class="active"><a href="/quiz">Quiz</a></li>
-                                <li class="login"><a href="#"><img src="/images/Login.png" alt="Login"></a></li>
-                            </ul>
-                        </nav>
-                    </div>
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
                 </div>
             </div>
         </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
     </header>
+
 
     <main>
         <section class="lesson-detail">
             <div class="container">
-                <h1><%= lesson.title %></h1>
+                <h1>
+                    <%= lesson.title %>
+                </h1>
                 <div class="lesson-image">
                     <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
                 </div>
                 <div class="lesson-description">
-                    <p><%= lesson.description %></p>
+                    <p>
+                        <%= lesson.description %>
+                    </p>
                 </div>
             </div>
         </section>
@@ -51,7 +75,7 @@
         <section class="tabs-section">
             <div class="container">
                 <div class="tabs">
-                    <div class="tab active" data-tab="characters">ตัวอักษร</div>
+                    <div class="tab active" data-tab="characters">ตัวละครสนทนา</div>
                     <div class="tab" data-tab="conversation">บทสนทนา</div>
                     <div class="tab" data-tab="practice">การฝึกฝน</div>
                 </div>
@@ -59,104 +83,81 @@
         </section>
 
         <section class="tab-content-section">
-            <div class="container">
-                <div id="tab-content-container">
-                    <!-- เนื้อหาจะถูกโหลดที่นี่ -->
-                    <div class="loading-message">กรุณารอ...</div> <!-- Loading message -->
+            <div class="container" id="tab-content-container">
+                <!-- แท็บตัวอักษร -->
+                <div class="tab-content active" id="characters">
+                    <h2>ตัวละครสนทนา</h2>
+                    <ul>
+                        <% characters.forEach(character=> { %>
+                            <li>
+                                <%= character.character_name %>: <%= character.description || 'ไม่มีคำอธิบาย' %>
+                            </li>
+                            <% }); %>
+                    </ul>
                 </div>
-            </div>
+
+                <!-- แท็บบทสนทนา -->
+                <div class="tab-content" id="conversation">
+                    <h2>บทสนทนา</h2>
+                    <div class="conversation-lines">
+                        <% conversationLines.forEach(line=> { %>
+                            <div
+                                class="line-content <%= line.character_id === Math.min(...conversationLines.map(c => c.character_id)) ? 'left' : 'right' %>">
+                                <strong>ตัวละคร <%= line.character_id %>:</strong>
+                                <p>
+                                    <%= line.content %>
+                                </p>
+                                <em>  <%= line.romaji %>,<br><br>
+                                      <%= line.translation %></em>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <!-- แท็บการฝึกฝน -->
+                <div class="tab-content" id="practice">
+                    <h2>การฝึกฝน</h2>
+                    <p>ข้อมูลการฝึกฝนจะถูกโหลดที่นี่</p>
+
+                    <% if (hasGame) { %>
+                        <a href="/DragandDropGame/<%= lesson.lesson_id %>">เล่นเกม Drag and Drop</a>
+                        <% } else { %>
+                            <p>ยังไม่มีเกม Drag and Drop สำหรับบทเรียนนี้</p>
+                            <% } %>
+                </div>
+
         </section>
 
         <section class="navigation-links">
             <div class="container">
                 <a href="/lessons">Back to Lessons</a>
-                <a href="/questions/<%= lesson.lesson_id %>">View Questions</a>
+                <% if (hasGame) { %>
+                    <a href="/DragandDropGame/<%= lesson.lesson_id %>">View Questions</a>
+                    <% } else { %>
+                        <p>ยังไม่มีการฝึกฝนของเกม Drag and Drop สำหรับบทเรียนนี้</p>
+                        <% } %>
             </div>
         </section>
     </main>
-    
+
     <footer>
         <p>ร้านขายสินค้า &copy; 2024</p>
     </footer>
 
-    
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const initialTab = document.querySelector('.tab.active');
-            if (initialTab) {
-                loadTabContent(initialTab);
-            }
-        });
-    
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                loadTabContent(this);
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
             });
         });
-    
-        function loadTabContent(tab) {
-            const tabContentContainer = document.getElementById('tab-content-container');
-            tabContentContainer.innerHTML = '<div class="loading-message">กรุณารอ...</div>';
-            
-            const tabType = tab.getAttribute('data-tab');
-            const lessonId = '<%= lesson.lesson_id %>';
-            
-            fetch(`/lessons/${lessonId}/content?type=${tabType}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    let content = '';
-                    if (tabType === 'characters') {
-                        content = data.map(item => `
-                            <div>
-                                <strong>${item.character_name}</strong>: ${item.description}
-                            </div>
-                        `).join('');
-                    } else if (tabType === 'conversation') {
-                        let conversations = {};
-                        data.forEach(item => {
-                            if (!conversations[item.conversation_title]) {
-                                conversations[item.conversation_title] = [];
-                            }
-                            conversations[item.conversation_title].push(item);
-                        });
-    
-                        content = Object.keys(conversations).map(title => `
-                            <div class="conversation">
-                                <h3>${title}</h3>
-                                <div class="conversation-lines">
-                                    ${conversations[title].map(line => `
-                                        <div class="line">
-                                            <div class="line-content ${line.character_id === 1 ? 'left' : 'right'}">
-                                                <strong>${line.character_name}:</strong>
-                                                <p>${line.content}</p>
-                                                <p class="romaji">${line.romaji}</p>
-                                                <p class="translation">${line.translation}</p>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `).join('');
-                    } else if (tabType === 'practice') {
-                        content = '<div>Practice content goes here.</div>';
-                    }
-                    tabContentContainer.innerHTML = content;
-                })
-                .catch(error => {
-                    console.error('Error loading content:', error);
-                    tabContentContainer.innerHTML = '<div class="error-message">ไม่สามารถโหลดเนื้อหาได้ กรุณาลองใหม่อีกครั้ง</div>';
-                });
-        }
     </script>
-    
-    
 </body>
+
 </html>

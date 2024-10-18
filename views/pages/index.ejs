@@ -7,121 +7,14 @@
     <title>Chan pe</title>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="website icon" type="png" href="images/logo.png">
-    <style>
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-        }
-
-        select,
-        button {
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .translation {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #e9ecef;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-        }
-
-
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-
-        .sidebar a {
-            padding: 8px 8px 8px 32px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #818181;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover {
-            color: #f1f1f1;
-        }
-
-        .sidebar .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
-        }
-
-
-
-
-        #main {
-            transition: margin-left .5s;
-            padding: 16px;
-        }
-
-        @media screen and (max-height: 450px) {
-            .sidebar {
-                padding-top: 15px;
-            }
-
-            .sidebar a {
-                font-size: 18px;
-            }
-        }
-        
-    </style>
 </head>
 
 <body>
-    <!-- Header -->
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
-                <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button>
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
                         <a href="#"><img src="images/logo.png" alt="#"></a>
@@ -131,45 +24,34 @@
                     <nav class="main-menu">
                         <ul class="menu-area-main">
                             <li><a href="/">Home</a></li>
-                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
                             <li><a href="/characters">ตัวอักษร</a></li>
                             <li><a href="/lessons">บทเรียน</a></li>
                             <li><a href="/tests">Quiz</a></li>
-                            <li><a href="/vocab">vocab</a></li>
-
-                            <% if (user) { %>
-                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
-                                <li><a href="/logout">ออกจากระบบ</a></li>
-                                <% } else { %>
-                                    <li><a id="login-link" href="/login">Sign In</a></li>
-                                    <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png"
-                                                alt="Sign Up"></a></li>
-                                    <% } %>
                         </ul>
                     </nav>
                 </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
             </div>
         </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
     </header>
-
-
-<div id="mySidebar" class="sidebar">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-  <a href="/profile">My profile</a>
-  <a href="#">About</a>
-  <a href="#">About</a>
-  <a href="#">------------</a>
-
-  <a href="#">Services</a>
-  <a href="#">Clients</a>
-  <a href="#">Contact</a>
-</div>
-
-<div id="main">
-  <h2>Collapsed Sidebar</h2>
-  <p>Click on the hamburger menu/bar icon to open the sidebar, and push this content to the right.</p>
-</div>
-    <!-- End Header -->
 
 
     <!-- Translation Section -->
@@ -203,19 +85,16 @@
     <!-- End Translation Section -->
 
 
-
-
+    
     <section class="scrollable-section">
         <div class="container">
             <h2>บทเรียนเบื้องต้น</h2>
             <div class="scroll-container-wrapper">
-                <button class="scroll-btn left"
-                    onclick="scrollLeft(this.parentElement.querySelector('.scroll-container'))">←</button>
                 <div class="scroll-container">
                     <% lessons.forEach(function(lesson) { %>
                         <div class="scroll-item">
                             <img src="/images/<%= lesson.image %>" alt="<%= lesson.title %>"
-                                style="width:100px; height:100px;">
+                                style="width: 250px;">
                             <h3>
                                 <%= lesson.title %>
                             </h3>
@@ -225,8 +104,6 @@
                         </div>
                         <% }); %>
                 </div>
-                <button class="scroll-btn right"
-                    onclick="scrollRight(this.parentElement.querySelector('.scroll-container'))">→</button>
             </div>
         </div>
     </section>
@@ -235,8 +112,6 @@
         <div class="container">
             <h2>โจทย์พาตะลุย</h2>
             <div class="scroll-container-wrapper">
-                <button class="scroll-btn left"
-                    onclick="scrollLeft(this.parentElement.querySelector('.scroll-container'))">←</button>
                 <div class="scroll-container">
                     <!-- Add your scrollable items here -->
                     <div class="scroll-item">Item 1</div>
@@ -244,8 +119,6 @@
                     <div class="scroll-item">Item 3</div>
                     <!-- Add more items as needed -->
                 </div>
-                <button class="scroll-btn right"
-                    onclick="scrollRight(this.parentElement.querySelector('.scroll-container'))">→</button>
             </div>
         </div>
     </section>
@@ -294,55 +167,8 @@
             </div>
         </div>
     </footer>
-    <!-- end footer -->
 
-    <script>
-        function translateContent() {
-            var inputText = document.getElementById('inputText').value;
-            var language = document.getElementById('languageSelect').value;
-            var outputText;
-
-            if (language === 'th') {
-                outputText = 'นี่คือข้อความที่แปลเป็นภาษาไทย';
-            } else {
-                outputText = 'This is the translated text in English';
-            }
-
-            document.getElementById('outputText').value = outputText;
-        }
-
-        function scrollLeft(scrollContainer) {
-            scrollContainer.scrollBy({
-                left: -200,
-                behavior: 'smooth'
-            });
-        }
-
-        function scrollRight(scrollContainer) {
-            scrollContainer.scrollBy({
-                left: 200,
-                behavior: 'smooth'
-            });
-        }
-
-
-
-    </script>
-
-
-    <script>
-        function openNav() {
-            document.getElementById("mySidebar").style.width = "250px";
-            document.getElementById("main").style.marginLeft = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-            document.getElementById("main").style.marginLeft = "0";
-
-        }
-        
-    </script>
+    <script src="/js/opennav-script.js"></script>
 </body>
 
 </html>

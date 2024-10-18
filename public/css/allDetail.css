@@ -1,0 +1,49 @@
+.test-detail {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.detail-content {
+    display: flex;
+    align-items: center;
+}
+
+.test-image {
+    width: 40%;
+    height: auto;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+
+.test-detail h1 {
+    color: #333;
+}
+
+.test-detail p {
+    font-size: 1.1em;
+    color: #555;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.nav-button {
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.nav-button:hover {
+    background: #0056b3;
+}

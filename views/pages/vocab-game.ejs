@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    
+
     <!-- Header -->
     <header>
         <div class="header">
@@ -28,17 +28,20 @@
                             <li><a href="/characters">ตัวอักษร</a></li>
                             <li><a href="/lessons">บทเรียน</a></li>
                             <li><a href="/tests">Quiz</a></li>
-                            <li><a href="/vocab">vocab</a></li>
-                            <li><a href="/vocab-game">vocab-game</a></li>
-
-                            <% if (user) { %>
-                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
-                                <li><a href="/logout">ออกจากระบบ</a></li>
-                                <% } else { %>
-                                    <li><a id="login-link" href="/login">Sign In</a></li>
-                                    <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png"
-                                                alt="Sign Up"></a></li>
+                            <div class="dropdown">
+                                <% if (user) { %>
+                                <button class="dropbtn"><%= user.username %></button>
+                                <div class="dropdown-content">
+                                        <a href="/profile">
+                                            <img src="/uploads/<%= user.profile_picture %>" alt="Profile Picture" class="profile-picture">
+                                        </a>
+                                        <a href="/logout">ออกจากระบบ</a>
+                                    <% } else { %>
+                                        <a id="login-link" href="/login">Log in</a>
+                                        <a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a>
                                     <% } %>
+                                </div>
+                            </div>
                         </ul>
                     </nav>
                 </div>
@@ -46,24 +49,24 @@
         </div>
     </header>
 
-
     <div class="question-container">
         <h2>เลือกภาพที่ตรงกับคำว่า: <%= correctVocab.japanese_word %></h2>
         <div class="image-options" id="image-container">
-            <!-- จะเพิ่มภาพลงใน DOM ที่นี่ -->
+            <!-- Images will be added here -->
         </div>
     </div>
 
+    <div class="score-container">
+        <h3>คะแนน: <span id="score-display">0</span></h3>
+    </div>
+
     <script>
-        
         const correctVocab = <%- JSON.stringify(correctVocab) %>;
         const randomVocab = <%- JSON.stringify(randomVocab) %>;
 
-        
         const images = [correctVocab, randomVocab];
         images.sort(() => Math.random() - 0.5);
 
-        
         const container = document.getElementById('image-container');
         images.forEach((vocab) => {
             const imageBox = document.createElement('div');
@@ -78,12 +81,42 @@
             container.appendChild(imageBox);
         });
 
+        let score = 0;
         function checkAnswer(isCorrect) {
             if (isCorrect) {
-                alert('ถูกต้อง! ' + correctVocab.japanese_word + ' คือคำที่ถูกต้อง');
-            } else {
-                alert('ไม่ถูกต้อง ลองใหม่อีกครั้ง!');
+                score++;
+                document.getElementById('score-display').textContent = score; 
             }
+
+            const message = isCorrect 
+                ? `ถูกต้อง!✅ ${correctVocab.japanese_word} คือคำที่ถูกต้อง. คะแนนปัจจุบัน: ${score}` 
+                : `ไม่ถูกต้อง💢 ลองใหม่อีกครั้ง! คะแนนปัจจุบัน: ${score}`;
+
+            const resultModal = document.createElement('div');
+            resultModal.className = 'modal';
+            resultModal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal()">&times;</span>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.body.appendChild(resultModal);
+
+            setTimeout(() => {
+                closeModal();
+                nextQuestion();
+            }, 2000);
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        function nextQuestion() {
+            window.location.href = `/vocab-game/${correctVocab.card_id}`;
         }
     </script>
 </body>

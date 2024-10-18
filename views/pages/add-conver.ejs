@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่ม Conversation Line</title>
+</head>
+<body>
+    <script src="/js/opennav-script.js"></script>
+    <header>
+        <div class="header">
+            <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
+    </header>
+
+    <h1>เพิ่ม Conversation Line</h1>
+    <form id="conversationLineForm">
+        <label for="character_id">Character ID:</label>
+        <input type="number" id="character_id" name="character_id" required><br>
+
+        <label for="line_number">Line Number:</label>
+        <input type="number" id="line_number" name="line_number" required><br>
+
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" required></textarea><br>
+
+        <label for="romaji">Romaji:</label>
+        <input type="text" id="romaji" name="romaji" required><br>
+
+        <label for="translation">Translation:</label>
+        <textarea id="translation" name="translation" required></textarea><br>
+
+        <label for="lesson_id">Lesson ID:</label>
+        <input type="number" id="lesson_id" name="lesson_id" required><br>
+
+        <button type="submit">เพิ่ม Conversation Line</button>
+    </form>
+
+    <script>
+        document.getElementById('conversationLineForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const response = await fetch('/add-conversation-line', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData)),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const result = await response.json();
+            alert(result.message);
+        });
+    </script>
+</body>
+</html>

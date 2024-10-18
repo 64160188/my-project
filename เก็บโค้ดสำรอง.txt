@@ -1003,3 +1003,516 @@ app.post('/login', (req, res) => {
     <% if (error !== null) { %>
     <p class="error"><%= error %></p>
     <% } %>
+
+
+
+
+
+
+    
+
+app.post('/add-lesson', uploadImageLesson, (req, res) => {
+    // ตรวจสอบว่าผู้ใช้เข้าสู่ระบบหรือไม่
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ success: false, message: 'Unauthorized: Please log in.' });
+    }
+
+    const { title, description, conversations, characters } = req.body;
+    const lesson_image = req.file ? req.file.filename : 'default.jpg';
+    const created_by = req.session.user.id;
+
+    // Check for missing fields
+    if (!title || !description || !conversations || conversations.length === 0) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    const sqlLesson = 'INSERT INTO lessons (title, description, image, created_by) VALUES (?, ?, ?, ?)';
+    connection.query(sqlLesson, [title, description, lesson_image, created_by], (err, lessonResult) => {
+        if (err) {
+            return handleError(res, 'Error inserting lesson: ' + err.message);
+        }
+
+        const lessonId = lessonResult.insertId;
+
+        // Insert conversations
+        const sqlCreateConversation = 'INSERT INTO conversations (lesson_id, title, created_by) VALUES (?, ?, ?)';
+        const conversationInserts = conversations.map((conv) => [lessonId, conv.title, created_by]);
+
+        connection.query(sqlCreateConversation, [lessonId, conversations[0].title, created_by], (err, conversationResult) => {
+            if (err) {
+                return handleError(res, 'Error creating conversation: ' + err.message);
+            }
+
+            const conversationId = conversationResult.insertId;
+            const conversationLines = [];
+
+            conversations.forEach((conv, index) => {
+                if (conv.lines && conv.lines.length > 0) {
+                    conv.lines.forEach(line => {
+                        const leftText = line.left_text || '';
+                        const rightText = line.right_text || '';
+                        const romajiLeft = line.left_romaji || '';
+                        const romajiRight = line.right_romaji || '';
+                        const translationLeft = line.left_translation || '';
+                        const translationRight = line.right_translation || '';
+
+                        // Assuming character_id is available in the line
+                        const leftCharacterId = line.left_character_id || null; // Replace with the actual character ID if needed
+                        const rightCharacterId = line.right_character_id || null; // Replace with the actual character ID if needed
+
+                        if (leftText) {
+                            conversationLines.push([conversationId, leftCharacterId, index + 1, leftText, romajiLeft, translationLeft]);
+                        }
+
+                        if (rightText) {
+                            conversationLines.push([conversationId, rightCharacterId, index + 1, rightText, romajiRight, translationRight]);
+                        }
+                    });
+                }
+            });
+
+            const sqlConversationLines = 'INSERT INTO conversation_lines (conversation_id, character_id, line_number, content, romaji, translation) VALUES ?';
+            if (conversationLines.length > 0) {
+                connection.query(sqlConversationLines, [conversationLines], (err) => {
+                    if (err) {
+                        return handleError(res, 'Error inserting conversation lines: ' + err.message);
+                    }
+                });
+            }
+
+            // Check and insert characters
+            if (characters && characters.length > 0) {
+                const characterInserts = characters.map(character => {
+                    const { character_name, description } = character;
+                    return [lessonId, character_name, description, created_by];
+                });
+
+                const sqlInsertCharacters = 'INSERT INTO characters (lesson_id, character_name, description, created_by) VALUES ?';
+                connection.query(sqlInsertCharacters, [characterInserts], (err) => {
+                    if (err) {
+                        return handleError(res, 'Error inserting characters: ' + err.message);
+                    }
+
+                    res.json({ success: true, message: 'Lesson, conversations, and characters added successfully', lessonId });
+                });
+            } else {
+                res.json({ success: true, message: 'Lesson and conversations added successfully, no characters added', lessonId });
+            }
+        });
+    });
+});
+
+// Function to handle errors
+function handleError(res, message) {
+    console.error(message);
+    res.status(500).json({ success: false, message });
+}
+
+
+<!-- lessons.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Lessons</title>
+    <link rel="stylesheet" href="/css/test-styles.css"> 
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <style>
+        
+        img {
+            width: 50%; /* ปรับขนาดความกว้างเป็น 100% ของพื้นที่บรรจุ */
+            height: 10px; /* กำหนดความสูงคงที่ที่ต้องการ (ปรับให้เหมาะสมกับความต้องการของคุณ) */
+            object-fit: cover; /* ปรับภาพให้พอดีกับกรอบในขณะที่รักษาสัดส่วน */
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/submit-quiz">ตัวอักษร</a></li>
+                            <li><a href="/questions">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                            <% } else { %>
+                                <li><a id="login-link" href="/login">Sign In</a></li>
+                                <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a></li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- End Header -->
+
+
+    
+    <main class="container">
+        <a href="/add-lesson">Add lesson</a>
+        <section class="grid">
+            <% lessons.forEach(lesson => { %>
+                <article>
+                    <h2><%= lesson.title %></h2>
+                    <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
+                    <p><%= lesson.description %></p>
+                    <a href="/lessons/<%= lesson.lesson_id %>">View Lesson</a>
+                </article>
+            <% }); %>            
+        </section>
+    </main>
+    
+    <script src="/js/addTest-script.js"></script>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Your Website Name</p>
+    </footer>
+    <!-- End Footer -->
+</body>
+</html>
+
+
+
+
+
+
+app.post('/add-lesson', uploadImageLesson, async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ success: false, message: 'Unauthorized: Please log in.' });
+    }
+
+    const { title, description, characters, conversations } = req.body;
+    const lessonImage = req.file.path;
+    const created_by = req.session.user.id;
+
+    // SQL Query to Insert Lesson Data
+    const lessonQuery = 'INSERT INTO lessons (title, description, image, created_by) VALUES (?, ?, ?, ?)';
+    
+    try {
+        const lessonResult = await new Promise((resolve, reject) => {
+            connection.query(lessonQuery, [title, description, lessonImage, created_by], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result);
+            });
+        });
+
+        const lessonId = lessonResult.insertId;
+
+        // Insert Characters and save their IDs
+        const characterPromises = characters.map((character) => {
+            const characterQuery = 'INSERT INTO characters (lesson_id, character_name, description, created_by) VALUES (?, ?, ?, ?)';
+            return new Promise((resolve, reject) => {
+                connection.query(characterQuery, [lessonId, character.character_name, character.description, created_by], (err, result) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve(result.insertId); // Return the character ID
+                });
+            });
+        });
+
+        // Wait for all character inserts to complete and get their IDs
+        const characterIds = await Promise.all(characterPromises);
+
+        // Insert Conversations
+        const conversationPromises = conversations.map((conversation, conversationIndex) => {
+            // Get left dialogues
+            const leftDialogues = conversation.left_text || [];
+            const rightDialogues = conversation.right_text || [];
+            let lineNumber = 1;  // สำหรับทั้ง left และ right dialogues
+
+            leftDialogues.forEach((text, index) => {
+                const leftRomaji = conversation.left_romaji[index];
+                const leftTranslation = conversation.left_translation[index];
+                const characterId = characterIds[0]; // Assume first character for left dialogue
+            
+                const conversationLineQuery = 'INSERT INTO conversation_lines (character_id, line_number, content, romaji, translation, lesson_id) VALUES (?, ?, ?, ?, ?, ?)';
+                connection.query(conversationLineQuery, [characterId, lineNumber++, text, leftRomaji, leftTranslation, lessonId], (err) => {
+                    if (err) console.error(err);
+                });
+            });
+            
+            rightDialogues.forEach((text, index) => {
+                const rightRomaji = conversation.right_romaji[index];
+                const rightTranslation = conversation.right_translation[index];
+                const characterId = characterIds[1]; // Assume second character for right dialogue
+            
+                const conversationLineQuery = 'INSERT INTO conversation_lines (character_id, line_number, content, romaji, translation, lesson_id) VALUES (?, ?, ?, ?, ?, ?)';
+                connection.query(conversationLineQuery, [characterId, lineNumber++, text, rightRomaji, rightTranslation, lessonId], (err) => {
+                    if (err) console.error(err);
+                });
+            });
+            
+        });
+
+        // Wait for all conversation inserts to complete
+        await Promise.all(conversationPromises);
+
+        res.json({ success: true, message: 'Lesson added successfully!' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chan pe</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="website icon" type="png" href="images/logo.png">
+    <style>
+        #bt-link {
+            color: black; 
+            border: 2px solid #008CBA;
+            background-color: #04AA6D;
+
+          }
+          #bt-link:hover {
+            background-color: #008CBA;
+            color: white;
+          }
+    </style>
+</head>
+
+<body>
+    
+    <!-- Header -->
+    <header>
+        <div class="header">
+            <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                            <li><a href="/DragandDropGame">DragandDropGame</a></li>
+                            
+                            <% if (user) { %>
+                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
+                                <li><a href="/logout">ออกจากระบบ</a></li>
+                                <% } else { %>
+                                    <li><a id="bt-link" href="/login">Log In</a></li>
+                                    <li><a id="bt-link" href="/sign_up">Sign Up</a></li>
+                                    <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+            <a href="#">About</a>
+            <a href="#">About</a>
+            <a href="#">------------</a>
+
+            <a href="#">Services</a>
+            <a href="#">Clients</a>
+            <a href="#">Contact</a>
+        </div>
+    </header>
+    <!-- End Header -->
+
+
+    <section class="score">
+        <span class="correct">0</span>/<span class="total">0</span>
+        <button id="play-again-btn">Play Again</button>
+    </section>
+    <section class="draggable-items">
+        <!-- Will be dynamically populated - Example Element: -->
+        <!-- <i class="fab fa-codepen draggable" draggable="true" style="color: #111111;" id="codepen"></i> -->
+    </section>
+    <section class="matching-pairs">
+        <!-- Will be dynamically populated - Example Element: -->
+        <!-- <div class="matching-pair">
+            <span class="label">Codepen</span><span class="droppable" data-brand="codepen"></span>
+        </div> -->
+    </section>
+</body>
+
+<script>
+    
+let correct = 0;
+let total = 0;
+const totalDraggableItems = 5;
+const totalMatchingPairs = 5; // Should be <= totalDraggableItems
+
+const scoreSection = document.querySelector(".score");
+const correctSpan = scoreSection.querySelector(".correct");
+const totalSpan = scoreSection.querySelector(".total");
+const playAgainBtn = scoreSection.querySelector("#play-again-btn");
+
+const draggableItems = document.querySelector(".draggable-items");
+const matchingPairs = document.querySelector(".matching-pairs");
+let draggableElements;
+let droppableElements;
+
+initiateGame();
+
+function initiateGame() {
+  const randomDraggableBrands = generateRandomItemsArray(totalDraggableItems, brands);
+  const randomDroppableBrands = totalMatchingPairs<totalDraggableItems ? generateRandomItemsArray(totalMatchingPairs, randomDraggableBrands) : randomDraggableBrands;
+  const alphabeticallySortedRandomDroppableBrands = [...randomDroppableBrands].sort((a,b) => a.brandName.toLowerCase().localeCompare(b.brandName.toLowerCase()));
+  
+  // Create "draggable-items" and append to DOM
+  for(let i=0; i<randomDraggableBrands.length; i++) {
+    draggableItems.insertAdjacentHTML("beforeend", `
+      <i class="fab fa-${randomDraggableBrands[i].iconName} draggable" draggable="true" style="color: ${randomDraggableBrands[i].color};" id="${randomDraggableBrands[i].iconName}"></i>
+    `);
+  }
+  
+  // Create "matching-pairs" and append to DOM
+  for(let i=0; i<alphabeticallySortedRandomDroppableBrands.length; i++) {
+    matchingPairs.insertAdjacentHTML("beforeend", `
+      <div class="matching-pair">
+        <span class="label">${alphabeticallySortedRandomDroppableBrands[i].brandName}</span>
+        <span class="droppable" data-brand="${alphabeticallySortedRandomDroppableBrands[i].iconName}"></span>
+      </div>
+    `);
+  }
+  
+  draggableElements = document.querySelectorAll(".draggable");
+  droppableElements = document.querySelectorAll(".droppable");
+  
+  draggableElements.forEach(elem => {
+    elem.addEventListener("dragstart", dragStart);
+    // elem.addEventListener("drag", drag);
+    // elem.addEventListener("dragend", dragEnd);
+  });
+  
+  droppableElements.forEach(elem => {
+    elem.addEventListener("dragenter", dragEnter);
+    elem.addEventListener("dragover", dragOver);
+    elem.addEventListener("dragleave", dragLeave);
+    elem.addEventListener("drop", drop);
+  });
+}
+
+// Drag and Drop Functions
+
+//Events fired on the drag target
+
+function dragStart(event) {
+  event.dataTransfer.setData("text", event.target.id); // or "text/plain"
+}
+
+//Events fired on the drop target
+
+function dragEnter(event) {
+  if(event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+    event.target.classList.add("droppable-hover");
+  }
+}
+
+function dragOver(event) {
+  if(event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+    event.preventDefault();
+  }
+}
+
+function dragLeave(event) {
+  if(event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+    event.target.classList.remove("droppable-hover");
+  }
+}
+
+function drop(event) {
+  event.preventDefault();
+  event.target.classList.remove("droppable-hover");
+  const draggableElementBrand = event.dataTransfer.getData("text");
+  const droppableElementBrand = event.target.getAttribute("data-brand");
+  const isCorrectMatching = draggableElementBrand===droppableElementBrand;
+  total++;
+  if(isCorrectMatching) {
+    const draggableElement = document.getElementById(draggableElementBrand);
+    event.target.classList.add("dropped");
+    draggableElement.classList.add("dragged");
+    draggableElement.setAttribute("draggable", "false");
+    event.target.innerHTML = `<i class="fab fa-${draggableElementBrand}" style="color: ${draggableElement.style.color};"></i>`;
+    correct++;  
+  }
+  scoreSection.style.opacity = 0;
+  setTimeout(() => {
+    correctSpan.textContent = correct;
+    totalSpan.textContent = total;
+    scoreSection.style.opacity = 1;
+  }, 200);
+  if(correct===Math.min(totalMatchingPairs, totalDraggableItems)) { // Game Over!!
+    playAgainBtn.style.display = "block";
+    setTimeout(() => {
+      playAgainBtn.classList.add("play-again-btn-entrance");
+    }, 200);
+  }
+}
+
+// Other Event Listeners
+playAgainBtn.addEventListener("click", playAgainBtnClick);
+function playAgainBtnClick() {
+  playAgainBtn.classList.remove("play-again-btn-entrance");
+  correct = 0;
+  total = 0;
+  draggableItems.style.opacity = 0;
+  matchingPairs.style.opacity = 0;
+  setTimeout(() => {
+    scoreSection.style.opacity = 0;
+  }, 100);
+  setTimeout(() => {
+    playAgainBtn.style.display = "none";
+    while (draggableItems.firstChild) draggableItems.removeChild(draggableItems.firstChild);
+    while (matchingPairs.firstChild) matchingPairs.removeChild(matchingPairs.firstChild);
+    initiateGame();
+    correctSpan.textContent = correct;
+    totalSpan.textContent = total;
+    draggableItems.style.opacity = 1;
+    matchingPairs.style.opacity = 1;
+    scoreSection.style.opacity = 1;
+  }, 500);
+}
+
+// Auxiliary functions
+function generateRandomItemsArray(n, originalArray) {
+  let res = [];
+  let clonedArray = [...originalArray];
+  if(n>clonedArray.length) n=clonedArray.length;
+  for(let i=1; i<=n; i++) {
+    const randomIndex = Math.floor(Math.random()*clonedArray.length);
+    res.push(clonedArray[randomIndex]);
+    clonedArray.splice(randomIndex, 1);
+  }
+  return res;
+}
+</script>
+</html>

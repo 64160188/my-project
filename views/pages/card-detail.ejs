@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= vocab.japanese_word %> - Vocabulary Detail
+    </title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/allDetail.css">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <style>
+        #vocabContainer {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        #vocabContainer h2 {
+            margin-top: 0;
+        }
+        
+        .vocab-card {
+            display: none;
+            width: 300px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            margin: 20px auto;
+        }
+        
+        .card-header {
+            margin-bottom: 10px;
+        }
+        
+        #vocab-image {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .card-content p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        .card-controls {
+            margin-top: 15px;
+        }
+        
+        .card-controls button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .card-controls button:hover {
+            background-color: #45a049;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header">
+            <div class="container">
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="/images/logo.png" alt="Logo"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <div class="limit-box">
+                        <nav class="main-menu">
+                            <ul class="menu-area-main">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/products">อุปกรณ์การเรียน</a></li>
+                                <li><a href="/characters">ตัวอักษร</a></li>
+                                <li><a href="/lessons">บทเรียน</a></li>
+                                <li><a href="/quizzes">Quiz</a></li>
+                                <li class="login"><a href="#"><img src="/images/Login.png" alt="Login"></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="test-detail">
+            <div class="detail-content">
+                <img src="/uploads/<%= card.image %>" alt="Test Image" class="test-image">
+                <div class="text-content">
+                    <h1>
+                        <%= card.name %>
+                    </h1>
+                    <p>
+                        <%= card.card_description %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/tests" class="nav-button">Back to Tests</a>
+            <a href="/vocab-game/<%= card.card_id %>" class="nav-button">Start Quiz</a>
+        </div>
+
+
+        <button class="navigation" id="showVocabBtn">Show Vocabulary</button>
+        <div id="vocab-card" class="vocab-card" style="display:none;">
+            <div class="card-header">
+                <h3 id="vocab-header"></h3>
+            </div>
+            <img id="vocab-image" src="" alt="Vocab Image" style="display:none;">
+            <div class="card-content">
+                <p><strong>Reading:</strong> <span id="reading-text"></span></p>
+                <p><strong>Translation:</strong> <span id="translation-text"></span></p>
+            </div>
+            
+            <div class="button-container">
+                <button class="nav-btn" onclick="changeCard(-1)">◀</button>
+                <button class="nav-btn" onclick="changeCard(1)">▶</button>
+            </div>
+        </div>
+        <div id="vocabContainer" style="display:none;">
+            <h2>การ์ดทั้งหมด</h2>
+            <ul>
+                <% vocab.forEach(function(word) { %>
+                    <li onclick="showVocabCard('<%= word.japanese_word %>', '<%= word.reading %>', '<%= word.translation %>', '/uploads/<%= word.image %>')">
+                        <strong>Japanese:</strong> <%= word.japanese_word %> <br>
+                        <strong>Reading:</strong> <%= word.reading %> <br>
+                        <strong>Translation:</strong> <%= word.translation %> <br>
+                        <img src="/uploads/<%= word.image %>" alt="Vocab Image" style="width: 50px; height: auto;">
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>ร้านขายสินค้า &copy; 2024</p>
+    </footer>
+
+    <script src="/js/manage-topics.js"></script>
+    <script>
+        const vocabularies = <%- JSON.stringify(vocab) %>;
+        let currentIndex = 0;
+
+        function changeCard(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = vocabularies.length - 1;
+            if (currentIndex >= vocabularies.length) currentIndex = 0;
+            updateCard();
+        }
+
+        function updateCard() {
+            const vocab = vocabularies[currentIndex];
+
+            document.querySelector('#vocab-card .card-header h3').innerText = vocab.japanese_word;
+            document.getElementById('reading-text').innerText = vocab.reading;
+            document.getElementById('translation-text').innerText = vocab.translation;
+
+            const imgElement = document.getElementById('vocab-image');
+            if (vocab.image) {
+                imgElement.src = '/uploads/' + vocab.image;
+                imgElement.alt = vocab.japanese_word + ' image';
+                imgElement.style.display = 'block';
+            } else {
+                imgElement.style.display = 'none';
+            }
+        }
+
+        document.getElementById('showVocabBtn').addEventListener('click', function () {
+            const vocabContainer = document.getElementById('vocabContainer');
+            if (vocabContainer.style.display === "none") {
+                vocabContainer.style.display = "block";
+                this.textContent = "Hide Vocabulary";
+                updateCard();
+                document.getElementById('vocab-card').style.display = "block";
+                vocabContainer.style.display = "none";
+                this.textContent = "Show Vocabulary";
+                document.getElementById('vocab-card').style.display = "none";
+            }
+        });
+
+        updateCard();
+
+    </script>
+</body>
+
+
+</html>

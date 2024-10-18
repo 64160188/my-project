@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มคำถาม Drag and Drop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <script src="/js/opennav-script.js"></script>
+    <header>
+        <div class="header">
+            <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
+    </header>
+
+    <h1>เพิ่มคำถาม Drag and Drop</h1>
+    <div id="lessonIdDisplay" style="margin-bottom: 20px;">
+        <strong>Lesson ID:</strong> <span id="lessonIdText"><%= lesson_id  %></span>
+        <strong>Topic ID:</strong> <span id="lessonIdText"><%= topic_id  %></span>
+    </div>
+    
+    <form id="dragDropForm" method="POST" action="/add-question">
+        <input type="hidden" name="lessonId" value="<%= lesson_id %>">
+        <input type="hidden" name="topicId" value="<%= lesson_id %>">
+
+        <div class="form-group">
+            <label for="sentence">Question (Sentence):</label>
+            <input type="text" id="sentence" name="sentence" required>
+        </div>
+
+        <div id="answers">
+            <div class="answer-item">
+                <label for="answer1">Answer 1:</label>
+                <input type="text" id="answer1" name="answers[]" required>
+                <input type="radio" name="correct_answer" value="0" required> Correct
+            </div>
+            <div class="answer-item">
+                <label for="answer2">Answer 2:</label>
+                <input type="text" id="answer2" name="answers[]" required>
+                <input type="radio" name="correct_answer" value="1"> Correct
+            </div>
+        </div>
+
+        <button type="button" onclick="addAnswer()">Add More Answers</button>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script src="/js/addLesson.js">
+
+    document.getElementById('lessonIdText').innerText = "<%= lesson_id %>";
+    </script>
+</body>
+</html>

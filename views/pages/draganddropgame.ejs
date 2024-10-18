@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #question {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .drop-zone {
+            border: 2px dashed #007BFF;
+            padding: 20px;
+            margin: 10px 0;
+            min-height: 50px;
+            text-align: center;
+        }
+        .draggable {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .correct {
+            background-color: rgb(40, 180, 40);
+        }
+        .incorrect {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Drag and Drop Game</h1>
+    <div id="question"></div>
+    <div class="drop-zone" id="dropZone">ลากคำตอบที่ถูกต้องที่นี่</div>
+    <div id="options"></div>
+    
+    <button id="nextQuestion">ถัดไป</button>
+
+    <script>
+        let questions = [];
+        let answers = [];
+        let currentQuestionIndex = 0;
+
+        const lessonId = window.location.pathname.split('/').pop();
+        loadQuestions(lessonId);
+
+        function loadQuestions(lessonId) {
+            fetch(`/drag-and-drop-game/${lessonId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                questions = data.questions;
+                answers = data.answers;
+                loadQuestion();
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        
+        }
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const dropZone = document.getElementById('dropZone');
+            const question = questions[currentQuestionIndex];
+
+            questionElement.innerHTML = question.sentence;
+            optionsElement.innerHTML = '';
+            dropZone.classList.remove('correct', 'incorrect');
+
+            answers.forEach(answer => {
+                const answerElement = document.createElement('div');
+                answerElement.innerText = answer.answer;
+                answerElement.classList.add('draggable');
+                answerElement.setAttribute('draggable', true);
+                answerElement.addEventListener('dragstart', dragStart);
+                optionsElement.appendChild(answerElement);
+            });
+
+            dropZone.innerHTML = 'ลากคำตอบที่ถูกต้องที่นี่';
+            dropZone.addEventListener('dragover', dragOver);
+            dropZone.addEventListener('drop', drop);
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData('text/plain', event.target.innerText);
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const droppedAnswer = event.dataTransfer.getData('text/plain');
+            const question = questions[currentQuestionIndex];
+            
+            const correctAnswer = answers.find(answer => answer.id === question.correct_answer_id);
+
+            if (droppedAnswer === correctAnswer.answer) {
+                event.target.innerHTML = `${droppedAnswer} (ถูกต้อง!)`;
+                event.target.classList.add('correct');
+            } else {
+                event.target.innerHTML = `${droppedAnswer} (ไม่ถูกต้อง)`;
+                event.target.classList.add('incorrect');
+            }
+        }
+
+        document.getElementById('nextQuestion').addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                alert('จบเกมแล้ว!');
+                currentQuestionIndex = 0;
+                loadQuestions(lessonId);
+            }
+        });
+    </script>
+</body>
+</html>

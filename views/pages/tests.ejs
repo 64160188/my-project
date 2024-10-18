@@ -1,19 +1,21 @@
-<!-- lessons.ejs -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Lessons</title>
-    <link rel="stylesheet" href="/css/test-styles.css"> 
+    <link rel="stylesheet" href="/css/test-styles.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
-<body>
-    <!-- Header -->
+
+<body>    
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
                         <a href="#"><img src="images/logo.png" alt="#"></a>
@@ -23,48 +25,87 @@
                     <nav class="main-menu">
                         <ul class="menu-area-main">
                             <li><a href="/">Home</a></li>
-                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
-                            <li><a href="/submit-quiz">ตัวอักษร</a></li>
-                            <li><a href="/questions">บทเรียน</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
                             <li><a href="/tests">Quiz</a></li>
-                            <% if (user) { %>
-                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
-                                <li><a href="/logout">ออกจากระบบ</a></li>
-                            <% } else { %>
-                                <li><a id="login-link" href="/login">Sign In</a></li>
-                                <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a></li>
-                            <% } %>
                         </ul>
                     </nav>
                 </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
             </div>
         </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
     </header>
-    
-    <!-- End Header -->
 
 
-    
     <main class="container">
-        <a href="/add-test">Add Test</a>
-        <section class="grid">
-            <% tests.forEach(test => { %>
-                <article>
-                    <h2><%= test.name %></h2>
-                    <img src="/uploads/<%= test.image %>" alt="Test Image">
-                    <p><%= test.description %></p>
-                    <a href="/tests/<%= test.test_id %>">View Test</a>
-                </article>
+        <div class="tabs">
+            <div class="dropdown">
+                <button class="dropbtn-add">Add</button>
+                <button class="tab-button" onclick="filterCategory('all')">ทั้งหมด</button>
+                <button class="tab-button" onclick="filterCategory('card')">Vocab Matching Game</button>
+                <button class="tab-button" onclick="filterCategory('quiz')">บททดสอบ</button>
+                <input type="text" id="searchBox" placeholder="Search for items...">
+                <div class="dropdown-content">
+                    <a href="/add-test">Add Test</a>
+                    <a href="/add-card">Add card</a>
+                </div>
+            </div>
+        </div>
+
+        <section class="grid" id="lessonGrid">
+            <% tests.forEach(test => { %> 
+                <a href="/tests/<%= test.test_id %>" class="card-link">
+                    <article class="lesson-item" data-category="<%= test.category %>">
+                        <h2><%= test.name %></h2>
+                        <img src="/uploads/<%= test.image %>" alt="Test Image">
+                        <p><%= test.description %></p>
+                    </article>
+                </a>
             <% }); %>
         </section>
+        
+        <h1>Cards</h1>
+        <section class="grid" id="cards-section">
+            <% if (cards && cards.length > 0) { %>
+                <% cards.forEach(card => { %>
+                    <a href="/card/<%= card.card_id %>" class="detail-button">
+                        <div class="card-item">
+                            <h3><%= card.card_name %></h3>
+                            <img src="/uploads/<%= card.image %>" alt="Card Image" class="card-image">
+                            <p><%= card.card_description %></p>
+                        </div>
+                    </a>
+                <% }); %>
+            <% } else { %>
+                <p>No cards available.</p>
+            <% } %>
+        </section>
     </main>
-    
+
     <script src="/js/addTest-script.js"></script>
 
-    <!-- Footer -->
+
     <footer>
         <p>© 2024 Your Website Name</p>
     </footer>
-    <!-- End Footer -->
 </body>
+
 </html>

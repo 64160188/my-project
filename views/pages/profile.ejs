@@ -11,11 +11,10 @@
 </head>
 
 <body>
-
     <header>
         <div class="header">
             <div class="container">
-                <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button>
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
                         <a href="#"><img src="images/logo.png" alt="#"></a>
@@ -25,24 +24,32 @@
                     <nav class="main-menu">
                         <ul class="menu-area-main">
                             <li><a href="/">Home</a></li>
-                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
                             <li><a href="/characters">ตัวอักษร</a></li>
                             <li><a href="/lessons">บทเรียน</a></li>
                             <li><a href="/tests">Quiz</a></li>
-                            <li><a href="/vocab">vocab</a></li>
-
-                            <% if (user) { %>
-                                <li><a href="/profile" class="active">เข้าสู่ระบบของผู้ใช้</a></li>
-                                <li><a href="/logout">ออกจากระบบ</a></li>
-                                <% } else { %>
-                                    <li><a id="login-link" href="/login">Sign In</a></li>
-                                    <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png"
-                                                alt="Sign Up"></a></li>
-                                    <% } %>
                         </ul>
                     </nav>
                 </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
             </div>
+        </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
         </div>
     </header>
 
@@ -58,7 +65,6 @@
         <% if (user.profile_picture) { %>
             <h3>แก้ไขโปรไฟล์</h3>
             <img id="profile_picture" src="/uploads/<%= user.profile_picture %>" alt="Profile Picture">
-            <span class="badge">3</span>
         <% } else { %>
             <h3>No Profile Picture Uploaded</h3>
         <% } %>
@@ -74,8 +80,7 @@
             <br>
             <button type="submit">Update Profile</button>
         </form>
-        
-
+        <button id="deleteProfileBtn">ลบโปรไฟล์</button>
     </div>
     
     
@@ -106,7 +111,39 @@
         }
 
         document.getElementById("defaultOpen").click();
+
+        document.getElementById('deleteProfileBtn').addEventListener('click', function() {
+            // แสดงกล่องยืนยันการลบ
+            const confirmation = confirm('คุณแน่ใจหรือไม่ว่าต้องการลบโปรไฟล์ของคุณ? การลบจะไม่สามารถยกเลิกได้');
+            
+            if (confirmation) {
+                // หากยืนยัน ให้ส่งคำขอไปที่เซิร์ฟเวอร์เพื่อทำการลบโปรไฟล์
+                fetch('/delete-profile', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('โปรไฟล์ของคุณถูกลบเรียบร้อยแล้ว');
+                        // อาจจะเปลี่ยนหน้าไปที่หน้า login หรือหน้าอื่น
+                        window.location.href = '/login';
+                    } else {
+                        alert('เกิดข้อผิดพลาดในการลบโปรไฟล์');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('ไม่สามารถลบโปรไฟล์ได้');
+                });
+            }
+        });
+        
     </script>
+    <script src="/js/opennav-script.js"></script>
+
 
 </body>
 </html>

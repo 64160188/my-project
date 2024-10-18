@@ -1,4 +1,3 @@
-/* public/css/styles.css */
 /* styles.css */
 /* public/css/form-styles.css */
 /*                     ^                         HEADHEADHEADHEADHEADHEADHEADHEADHEADHEAD                         */
@@ -6,51 +5,18 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 100%);
+    
 }
 
 .header {
-    background-color: #333;
+    background-color: #ff6aba;
     color: #fff;
-    padding: 10px 0;
+    padding: 5px 50px;
 }
 
 .header .logo img {
     height: 70px;
-}
-
-.menu-area {
-    text-align: right;
-}
-
-.menu-area-main {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.menu-area-main img{
-    width: 40px;
-}
-
-.menu-area-main li {
-    margin-left: 20px;
-}
-
-.menu-area-main li a {
-    text-decoration: none;
-    color: #fff;
-    font-size: 16px;
-    padding: 5px 10px;
-    transition: background-color 0.3s ease;
-}
-
-.menu-area-main li a:hover{
-    
-    background-color: #555;
-    border-radius: 5px;
 }
 
 .header .container {
@@ -63,26 +29,56 @@ body {
 }
 
 .header .logo_section {
+    margin-left: 5%;
+    flex: 1;
     display: flex;
     align-items: center;
-    margin-left: 100px;
 }
 
 .header .menu-area {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.menu-area-main {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
-    flex-grow: 1;
-    justify-content: flex-end;
 }
 
-.header .limit-box {
+.menu-area-main li {
+    margin: 0 15px;
+}
+
+.menu-area-main li a {
+    color: white;
+    padding: 18px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.menu-area-main li a:hover {
+    color: #0056b3;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.header .menu-right {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
 }
 
-.menu-area-main  {
-    height: 20px;
+.header .menu-right li {
+    margin-left: 20px;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -119,26 +115,121 @@ body {
 }
 
 
+/*          sidebar               */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-/* สไตล์ของ container หลัก */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+select,
+button {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+button {
+    background-color: #3bc92b;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.translation {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #e9ecef;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidebar a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    color: #f1f1f1;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+
+@media screen and (max-height: 450px) {
+    .sidebar {
+        padding-top: 15px;
+    }
+
+    .sidebar a {
+        font-size: 18px;
+    }
+}
+
 .translator-container {
     background-color: white;
     width: 100%;
     max-width: 100%;
-    padding: 30px;
+    padding: 0;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-/* สไตล์ของหัวข้อ */
 .translator-container h1 {
     font-size: 2rem;
-    color: #4285f4; /* สีฟ้าแบบ Google */
+    color: #4285f4;
     margin-bottom: 20px;
 }
 
-/* สไตล์ของฟอร์ม */
 .translator-form {
     display: flex;
     flex-direction: column;
@@ -155,7 +246,8 @@ body {
     resize: vertical;
 }
 
-.translator-form select, .translator-form button {
+.translator-form select,
+.translator-form button {
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 5px;
@@ -163,7 +255,6 @@ body {
     font-size: 1rem;
 }
 
-/* ปุ่มแปล */
 .translator-form button {
     background-color: #4285f4;
     color: white;
@@ -176,7 +267,6 @@ body {
     background-color: #357ae8;
 }
 
-/* สไตล์สำหรับการแปล */
 .translation {
     background-color: #e8f0fe;
     padding: 15px;
@@ -194,13 +284,12 @@ body {
     color: #202124;
 }
 
-/* สไตล์สำหรับข้อความ error */
 .error {
     color: red;
     font-size: 0.9rem;
     margin-top: 10px;
 }
-/* Scrollable Section Styles */
+
 .scrollable-section {
     padding: 20px;
     background-color: #f0f0f0;
@@ -245,7 +334,6 @@ body {
     background-color: #555;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .translation-controls {
         flex-direction: column;
@@ -256,14 +344,12 @@ body {
         width: 100%;
     }
 
-    .translation-controls select, .translation-controls button {
+    .translation-controls select,
+    .translation-controls button {
         width: 100%;
         margin: 5px 0;
     }
 }
-
-
-/*tran-section*/
 
 .tran-section {
     margin: 50px;
@@ -272,8 +358,6 @@ body {
 }
 
 
-
-/* Additional styles for choice-group */
 .choice-group {
     margin-bottom: 10px;
     display: flex;
@@ -288,15 +372,8 @@ body {
 .choice-group button {
     flex-shrink: 0;
 }
-*/
 
-/* public/css/cart */
-
-
-/* ---------------cart---------------------*/
-
-/* การซ่อน/แสดงเนื้อหาในแต่ละแท็บ */
-.tab-content {
+*/ .tab-content {
     display: none;
 }
 
@@ -304,7 +381,6 @@ body {
     display: block;
 }
 
-/* สไตล์สำหรับส่วนท้าย */
 footer {
     background-color: #333;
     color: #fff;
@@ -316,7 +392,6 @@ footer p {
     margin: 0;
 }
 
-/* การออกแบบให้รองรับหน้าจอขนาดเล็ก */
 @media (max-width: 768px) {
 
     .search-tabs .container {
@@ -329,26 +404,17 @@ footer p {
     }
 }
 
-
-
-
-
-
-
 section.grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
 }
 
-    article {
-        border: 1px solid #ccc;
-        padding: 1rem;
-        text-align: center;
-    }
-
-
-
+article {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    text-align: center;
+}
 
 /* result-question.css */
 #results-container {
@@ -378,4 +444,47 @@ section.grid {
 
 .choices label {
     margin-left: 0.5rem;
+}
+
+
+.dropbtn {
+    background-color: #04AA6D;
+    border-radius: 50px;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
 }

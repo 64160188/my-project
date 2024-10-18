@@ -1,17 +1,72 @@
-<!-- add-lesson.ejs -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Lesson</title>
+    <title>Add Lesson</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/add-card-test-styles.css">
+
+    <style>
+        .dialogue-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .character-section {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+        }
+
+        .button-container {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            /* สีเขียว */
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            /* สีเขียวเข้มเมื่อชี้ */
+        }
+
+        h2,
+        h3 {
+            color: #333;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
+
 <body>
-    <!-- Header -->
+
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
                         <a href="#"><img src="images/logo.png" alt="#"></a>
@@ -21,49 +76,130 @@
                     <nav class="main-menu">
                         <ul class="menu-area-main">
                             <li><a href="/">Home</a></li>
-                            <li><a href="/products">อุปกรณ์การเรียน</a></li>
-                            <li><a href="/submit-quiz">ตัวอักษร</a></li>
-                            <li><a href="/questions">บทเรียน</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
                             <li><a href="/tests">Quiz</a></li>
-                            <% if (user) { %>
-                                <li><a href="/profile">เข้าสู่ระบบของผู้ใช้</a></li>
-                                <li><a href="/logout">ออกจากระบบ</a></li>
-                            <% } else { %>
-                                <li><a id="login-link" href="/login">Sign In</a></li>
-                                <li><a id="sign-up-link" href="/sign_up"><img src="images/Login.png" alt="Sign Up"></a></li>
-                            <% } %>
                         </ul>
                     </nav>
                 </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
             </div>
         </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
     </header>
-    
-    <!-- End Header -->
 
-    <main class="container">
-        <h1>Add New Lesson</h1>
-        <form action="/lessons/add" method="POST" enctype="multipart/form-data">
-            <div>
-                <label for="title">Lesson Title:</label>
-                <input type="text" id="title" name="title" required>
+
+
+    <div class="form-container">
+        <h1>Add Lesson</h1>
+        <form id="lessonForm" enctype="multipart/form-data">
+            <label for="title">Lesson Title:</label>
+            <input type="text" name="title" required aria-label="Lesson Title"><br><br>
+
+            <label for="description">Description:</label>
+            <textarea name="description" required aria-label="Lesson Description"></textarea><br><br>
+
+            <label for="lesson_image">Upload Image:</label>
+            <input type="file" name="lesson_image" accept="image/*" required><br><br>
+
+            <section>
+                <h2>Characters</h2>
+                <div id="characters">
+                    <div class="character-section">
+                        <label for="character_name">Character Name:</label>
+                        <input type="text" name="characters[0][character_name]" required
+                            aria-label="Character Name"><br><br>
+
+                        <label for="character_description">Description:</label>
+                        <textarea name="characters[0][description]" required
+                            aria-label="Character Description"></textarea><br><br>
+                    </div>
+
+                    <div class="character-section">
+                        <label for="character_name">Character Name:</label>
+                        <input type="text" name="characters[1][character_name]" required
+                            aria-label="Character Name"><br><br>
+
+                        <label for="character_description">Description:</label>
+                        <textarea name="characters[1][description]" required
+                            aria-label="Character Description"></textarea><br><br>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Conversations</h2>
+                <div id="conversations">
+                    <div class="dialogue-section">
+                        <div class="left-character-dialogues">
+                            <h3>Left Character (1)</h3>
+                            <div class="left-dialogue">
+                                <label for="left-dialogue">Japanese:</label>
+                                <textarea name="conversations[0][left_text][]" rows="2" required
+                                    aria-label="Japanese Dialogue"></textarea><br><br>
+
+                                <label for="left-dialogue-romaji">Romaji:</label>
+                                <input type="text" name="conversations[0][left_romaji][]" required
+                                    aria-label="Romaji Dialogue"><br><br>
+
+                                <label for="left-dialogue-translation">Translation:</label>
+                                <textarea name="conversations[0][left_translation][]" rows="2" required
+                                    aria-label="Translation"></textarea><br><br>
+                            </div>
+                        </div>
+                        <button type="button" class="add-left-dialogue">Add Left Dialogue</button>
+
+                        <div class="right-character-dialogues">
+                            <h3>Right Character (2)</h3>
+                            <div class="right-dialogue">
+                                <label for="right-dialogue">Japanese:</label>
+                                <textarea name="conversations[0][right_text][]" rows="2" required
+                                    aria-label="Japanese Dialogue"></textarea><br><br>
+
+                                <label for="right-dialogue-romaji">Romaji:</label>
+                                <input type="text" name="conversations[0][right_romaji][]" required
+                                    aria-label="Romaji Dialogue"><br><br>
+
+                                <label for="right-dialogue-translation">Translation:</label>
+                                <textarea name="conversations[0][right_translation][]" rows="2" required
+                                    aria-label="Translation"></textarea><br><br>
+                            </div>
+                        </div>
+                        <button type="button" class="add-right-dialogue">Add Right Dialogue</button>
+                    </div>
+                </div>
+
+                <button type="button" id="add-conversation">Add Another Conversation</button>
+                <br><br>
+            </section>
+
+            <div class="button-container">
+                <h2>Would you like to add a Drag and Drop Game?</h2>
+                <button type="button" id="addGameYes">Yes</button>
+                <button type="button" id="addGameNo">No</button>
             </div>
-            <div>
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" rows="4" required></textarea>
-            </div>
-            <div>
-                <label for="image">Image:</label>
-                <input type="file" id="image" name="image" accept="image/*" required>
-            </div>
-            <button type="submit">Add Lesson</button>
-        </form>
-    </main>
-    
-    <!-- Footer -->
-    <footer>
-        <p>© 2024 Your Website Name</p>
-    </footer>
-    <!-- End Footer -->
+
+            <button type="submit" id="submit-btn">Submit</button>
+
+            <script src="/js/addLesson.js">
+            </script>
 </body>
+
 </html>

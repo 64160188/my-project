@@ -1,34 +1,84 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
-    <title>Andev web - Sign Up</title>
-    <link rel="stylesheet" href="css/login.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chan pe</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="website icon" type="png" href="images/logo.png">
+    <style>
+    </style>
+
 <body>
-    <div class="background">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
-    <form action="/signup" method="POST">
-        <h3>Sign Up</h3>
-        <label for="username">Username</label>
-        <input type="text" placeholder="Username" id="username" name="username" required>
-        
-        <label for="email">Email</label>
-        <input type="email" placeholder="Email" id="email" name="email" required>
-        
-        <label for="password">Password</label>
-        <input type="password" placeholder="Password" id="password" name="password" required>
-        
-        <button type="submit">Sign Up</button>
-        
-        <div class="social">
-            <div class="go"><i class="fab fa-google"></i> Google</div>
-            <div class="fb"><i class="fab fa-facebook"></i> Facebook</div>
+
+    <script src="/js/opennav-script.js"></script>
+    <header>
+        <div class="header">
+            <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
+                <div class="logo_section">
+                    <div class="logo">
+                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                    </div>
+                </div>
+                <div class="menu-area">
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
+                </div>
+            </div>
         </div>
         
-        <p>Already have an account? <a href="/login">Login here</a></p>
-    </form>
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
+        </div>
+    </header>
+
+
+    <div class="form-container">
+        <h1>CHAN PE</h1>
+        <h2>Create your account.</h2>
+
+        <form action="/signup" method="POST">
+            <h3>Sign Up</h3>
+            <label for="username">Full name *</label>
+            <input type="text" placeholder="Username" id="username" name="username" required>
+            
+            <label for="email">Email address *</label>
+            <input type="email" placeholder="Email" id="email" name="email" required>
+            
+            <label for="password">Password *</label>
+            <input type="password" placeholder="Password" id="password" name="password" required>
+            
+            <button class="signup-btn" type="submit">Sign Up</button>
+            
+            <p>Already have an account? <a href="/login">Login here</a></p>
+        </form>
+    </div>
+
 </body>
+
+
 </html>
