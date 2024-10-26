@@ -1,4 +1,4 @@
-.test-detail {
+.test-detail,.lesson-detail {
     max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
@@ -10,9 +10,13 @@
 .detail-content {
     display: flex;
     align-items: center;
+    width: 100%;
 }
-
-.test-image {
+.detail-content img{
+    display: flex;
+    align-items: center;
+}
+.test-image,.lesson-image {
     width: 40%;
     height: auto;
     border-radius: 10px;
@@ -20,11 +24,11 @@
 }
 
 
-.test-detail h1 {
+.test-detail,.lesson-detail h1 {
     color: #333;
 }
 
-.test-detail p {
+.test-detail,.lesson-detail p {
     font-size: 1.1em;
     color: #555;
 }
@@ -42,8 +46,124 @@
     border-radius: 5px;
     text-decoration: none;
     transition: background 0.3s;
+    align-items: center;
 }
 
 .nav-button:hover {
     background: #0056b3;
+}
+
+
+#vocabContainer {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+#vocabContainer h2 {
+    margin-top: 0;
+}
+
+.vocab-card {
+    display: none;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    text-align: center;
+    margin: 20px auto;
+}
+
+.card-header {
+    margin-bottom: 10px;
+}
+
+#vocab-image {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.card-content p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.card-controls {
+    margin-top: 15px;
+}
+
+.card-controls button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+.card-controls button:hover {
+    background-color: #45a049;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#next-button {
+    width: 100%;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 2px dashed #4CAF50;
+    padding: 50px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center;
+    font-size: 18px;
+}
+
+#next-button:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.character-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.character-table th,
+.character-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.character-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.user-image {
+    width: 50px; /* กำหนดขนาดกว้าง */
+    border-radius: 50%; /* ทำให้เป็นรูปกลม */
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    margin: 10px 0; 
+}
+.username {
+    font-size: 1em; /* ขนาดฟอนต์สำหรับชื่อ */
+    font-weight: bold; /* ทำให้ชื่อหนา */
 }

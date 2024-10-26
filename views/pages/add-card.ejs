@@ -18,7 +18,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -33,21 +33,25 @@
                 </div>
                 <div class="menu-right">
                     <li class="dropdown">
-                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <a href="#" class="dropbtn">
+                            <% if (user) { %>
+                                <%= user.username %>
+                                    <% } else { %>Account<% } %>
+                        </a>
                         <div class="dropdown-content">
                             <% if (user) { %>
                                 <a href="/profile">Profile</a>
                                 <a href="/logout">ออกจากระบบ</a>
-                            <% } else { %>
-                                <a id="bt-link" href="/login">Log In</a>
-                                <a id="bt-link" href="/sign_up">Sign Up</a>
-                            <% } %>
+                                <% } else { %>
+                                    <a id="bt-link" href="/login">Log In</a>
+                                    <a id="bt-link" href="/sign_up">Sign Up</a>
+                                    <% } %>
                         </div>
                     </li>
                 </div>
             </div>
         </div>
-        
+
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
             <a href="/profile">My profile</a>

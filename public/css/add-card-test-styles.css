@@ -69,3 +69,15 @@ button {
     margin-bottom: 20px;
     background-color: #f9f9f9;
 }
+
+textarea {
+padding: 15px;
+margin-bottom: 15px;
+border-radius: 5px;
+border: 1px solid #ccc;
+min-height: 100px;
+box-sizing: border-box;
+width: 100%;
+overflow-y: hidden; /* Hide scrollbar */
+resize: none;
+}

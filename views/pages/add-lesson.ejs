@@ -69,7 +69,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -84,21 +84,25 @@
                 </div>
                 <div class="menu-right">
                     <li class="dropdown">
-                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <a href="#" class="dropbtn">
+                            <% if (user) { %>
+                                <%= user.username %>
+                                    <% } else { %>Account<% } %>
+                        </a>
                         <div class="dropdown-content">
                             <% if (user) { %>
                                 <a href="/profile">Profile</a>
                                 <a href="/logout">ออกจากระบบ</a>
-                            <% } else { %>
-                                <a id="bt-link" href="/login">Log In</a>
-                                <a id="bt-link" href="/sign_up">Sign Up</a>
-                            <% } %>
+                                <% } else { %>
+                                    <a id="bt-link" href="/login">Log In</a>
+                                    <a id="bt-link" href="/sign_up">Sign Up</a>
+                                    <% } %>
                         </div>
                     </li>
                 </div>
             </div>
         </div>
-        
+
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
             <a href="/profile">My profile</a>
@@ -148,47 +152,12 @@
                 <h2>Conversations</h2>
                 <div id="conversations">
                     <div class="dialogue-section">
-                        <div class="left-character-dialogues">
-                            <h3>Left Character (1)</h3>
-                            <div class="left-dialogue">
-                                <label for="left-dialogue">Japanese:</label>
-                                <textarea name="conversations[0][left_text][]" rows="2" required
-                                    aria-label="Japanese Dialogue"></textarea><br><br>
-
-                                <label for="left-dialogue-romaji">Romaji:</label>
-                                <input type="text" name="conversations[0][left_romaji][]" required
-                                    aria-label="Romaji Dialogue"><br><br>
-
-                                <label for="left-dialogue-translation">Translation:</label>
-                                <textarea name="conversations[0][left_translation][]" rows="2" required
-                                    aria-label="Translation"></textarea><br><br>
-                            </div>
-                        </div>
-                        <button type="button" class="add-left-dialogue">Add Left Dialogue</button>
-
-                        <div class="right-character-dialogues">
-                            <h3>Right Character (2)</h3>
-                            <div class="right-dialogue">
-                                <label for="right-dialogue">Japanese:</label>
-                                <textarea name="conversations[0][right_text][]" rows="2" required
-                                    aria-label="Japanese Dialogue"></textarea><br><br>
-
-                                <label for="right-dialogue-romaji">Romaji:</label>
-                                <input type="text" name="conversations[0][right_romaji][]" required
-                                    aria-label="Romaji Dialogue"><br><br>
-
-                                <label for="right-dialogue-translation">Translation:</label>
-                                <textarea name="conversations[0][right_translation][]" rows="2" required
-                                    aria-label="Translation"></textarea><br><br>
-                            </div>
-                        </div>
-                        <button type="button" class="add-right-dialogue">Add Right Dialogue</button>
-                    </div>
                 </div>
 
-                <button type="button" id="add-conversation">Add Another Conversation</button>
+
                 <br><br>
             </section>
+            <button type="button" id="add-conversation">Add Another Conversation</button>
 
             <div class="button-container">
                 <h2>Would you like to add a Drag and Drop Game?</h2>

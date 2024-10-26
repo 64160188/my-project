@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
 
-<body>    
+<body>
     <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
@@ -18,7 +18,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -62,7 +62,7 @@
                 <button class="tab-button" onclick="filterCategory('all')">ทั้งหมด</button>
                 <button class="tab-button" onclick="filterCategory('card')">Vocab Matching Game</button>
                 <button class="tab-button" onclick="filterCategory('quiz')">บททดสอบ</button>
-                <input type="text" id="searchBox" placeholder="Search for items...">
+                <!-- <input type="text" id="searchBox" placeholder="Search for items..."> -->
                 <div class="dropdown-content">
                     <a href="/add-test">Add Test</a>
                     <a href="/add-card">Add card</a>
@@ -74,9 +74,9 @@
             <% tests.forEach(test => { %> 
                 <a href="/tests/<%= test.test_id %>" class="card-link">
                     <article class="lesson-item" data-category="<%= test.category %>">
-                        <h2><%= test.name %></h2>
+                        <h2 class="title"><%= test.name %></h2>
                         <img src="/uploads/<%= test.image %>" alt="Test Image">
-                        <p><%= test.description %></p>
+                        <p class="destipt"><%= test.description %></p>
                     </article>
                 </a>
             <% }); %>
@@ -88,9 +88,9 @@
                 <% cards.forEach(card => { %>
                     <a href="/card/<%= card.card_id %>" class="detail-button">
                         <div class="card-item">
-                            <h3><%= card.card_name %></h3>
+                            <h2 class="title"><%= card.card_name %></h3>
                             <img src="/uploads/<%= card.image %>" alt="Card Image" class="card-image">
-                            <p><%= card.card_description %></p>
+                            <p class="destipt"><%= card.card_description %></p><br>
                         </div>
                     </a>
                 <% }); %>
@@ -103,8 +103,15 @@
     <script src="/js/addTest-script.js"></script>
 
 
+
     <footer>
-        <p>© 2024 Your Website Name</p>
+        <div class="headinga">
+            <h3>เรียนภาษาญี่ปุ่น กับ ChanPe</h3>
+            <span>Burapha University, 169 Long Had Bangsaen Rd ,Thailand, TH</span>
+            <p>(+66) 8866458**
+                <br>64160188@go.buu.ac.th
+            </p>
+        </div>
     </footer>
 </body>
 

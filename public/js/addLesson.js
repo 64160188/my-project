@@ -1,8 +1,7 @@
-/*  Add-Leeson  */
-let conversationIndex = 0;
+let conversationIndex = 0; // ตัวแปรเก็บดัชนีบทสนทนา
+let lineNumber = 1; // เริ่มจาก 1 สำหรับ Line Number
 
 document.getElementById('add-conversation').addEventListener('click', function () {
-    conversationIndex++;
     const conversationsDiv = document.getElementById('conversations');
 
     // Create a new dialogue section
@@ -10,39 +9,73 @@ document.getElementById('add-conversation').addEventListener('click', function (
     newDialogueSection.className = 'dialogue-section';
 
     newDialogueSection.innerHTML = `
-<div class="left-character-dialogues">
-<h3>Left Character (${conversationIndex + 1})</h3>
-<div class="left-dialogue">
-<label for="left-dialogue">Japanese:</label>
-<textarea name="conversations[${conversationIndex}][left_text][]" rows="2" required aria-label="Japanese Dialogue"></textarea><br><br>
+    <div class="left-character-dialogues">
+        <h3>Left Character (${conversationIndex + 1})</h3>
+        <div class="left-dialogue">
+            <label for="left-dialogue">Japanese:</label>
+            <textarea name="conversations[${conversationIndex}][left_text][]" rows="2" required
+                aria-label="Japanese Dialogue"></textarea><br><br>
 
-<label for="left-dialogue-romaji">Romaji:</label>
-<input type="text" name="conversations[${conversationIndex}][left_romaji][]" required aria-label="Romaji Dialogue"><br><br>
+            <label for="left-dialogue-romaji">Romaji:</label>
+            <input type="text" name="conversations[${conversationIndex}][left_romaji][]" required
+                aria-label="Romaji Dialogue"><br><br>
 
-<label for="left-dialogue-translation">Translation:</label>
-<textarea name="conversations[${conversationIndex}][left_translation][]" rows="2" required aria-label="Translation"></textarea><br><br>
-</div>
-</div>
-<button type="button" class="add-left-dialogue">Add Left Dialogue</button>
+            <label for="left-dialogue-translation">Translation:</label>
+            <textarea name="conversations[${conversationIndex}][left_translation][]" rows="2" required
+                aria-label="Translation"></textarea><br><br>
 
-<div class="right-character-dialogues">
-<h3>Right Character (${conversationIndex + 1})</h3>
-<div class="right-dialogue">
-<label for="right-dialogue">Japanese:</label>
-<textarea name="conversations[${conversationIndex}][right_text][]" rows="2" required aria-label="Japanese Dialogue"></textarea><br><br>
+            <label for="line-number-left">Line Number:</label>
+            <input type="number" name="conversations[${conversationIndex}][line_number_left][]" value="${lineNumber}" readonly>
+        </div>
+    </div>
+    <button type="button" class="add-left-dialogue">Add Left Dialogue</button>
 
-<label for="right-dialogue-romaji">Romaji:</label>
-<input type="text" name="conversations[${conversationIndex}][right_romaji][]" required aria-label="Romaji Dialogue"><br><br>
+    <div class="right-character-dialogues">
+        <h3>Right Character (${conversationIndex + 1})</h3>
+        <div class="right-dialogue">
+            <label for="right-dialogue">Japanese:</label>
+            <textarea name="conversations[${conversationIndex}][right_text][]" rows="2" required
+                aria-label="Japanese Dialogue"></textarea><br><br>
 
-<label for="right-dialogue-translation">Translation:</label>
-<textarea name="conversations[${conversationIndex}][right_translation][]" rows="2" required aria-label="Translation"></textarea><br><br>
-</div>
-</div>
-<button type="button" class="add-right-dialogue">Add Right Dialogue</button>
-`;
+            <label for="right-dialogue-romaji">Romaji:</label>
+            <input type="text" name="conversations[${conversationIndex}][right_romaji][]" required
+                aria-label="Romaji Dialogue"><br><br>
+
+            <label for="right-dialogue-translation">Translation:</label>
+            <textarea name="conversations[${conversationIndex}][right_translation][]" rows="2" required
+                aria-label="Translation"></textarea><br><br>
+
+            <label for="line-number-right">Line Number:</label>
+            <input type="number" name="conversations[${conversationIndex}][line_number_right][]" value="${lineNumber + 1}" readonly>
+        </div>
+    </div>
+    <button type="button" class="add-right-dialogue">Add Right Dialogue</button>
+    `;
 
     conversationsDiv.appendChild(newDialogueSection);
+    conversationIndex++; // เพิ่มดัชนีบทสนทนาทุกครั้งที่เพิ่มบทสนทนา
+    lineNumber += 2; // เพิ่ม lineNumber ทุกครั้งที่เพิ่มบทสนทนา
 });
+
+
+// Update line number function
+function updateLineNumber(index, side) {
+    const leftJapanese = document.querySelector(`textarea[name="conversations[${index}][left_text][]"]`).value;
+    const leftRomaji = document.querySelector(`input[name="conversations[${index}][left_romaji][]"]`).value;
+    const leftTranslation = document.querySelector(`textarea[name="conversations[${index}][left_translation][]"]`).value;
+
+    const rightJapanese = document.querySelector(`textarea[name="conversations[${index}][right_text][]"]`).value;
+    const rightRomaji = document.querySelector(`input[name="conversations[${index}][right_romaji][]"]`).value;
+    const rightTranslation = document.querySelector(`textarea[name="conversations[${index}][right_translation][]"]`).value;
+
+    if (side === 'left') {
+        const lineNumberInput = document.querySelector(`input[name="conversations[${index}][line_number][]"]`);
+        lineNumberInput.value = leftJapanese ? leftJapanese : leftRomaji ? leftRomaji : leftTranslation ? leftTranslation : '';
+    } else if (side === 'right') {
+        const lineNumberInput = document.querySelector(`input[name="conversations[${index}][line_number][]"]`);
+        lineNumberInput.value = rightJapanese ? rightJapanese : rightRomaji ? rightRomaji : rightTranslation ? rightTranslation : '';
+    }
+}
 
 // Additional logging for debugging left and right dialogues
 document.addEventListener('click', function (event) {
@@ -59,8 +92,12 @@ document.addEventListener('click', function (event) {
 
 <label for="left-dialogue-translation">Translation:</label>
 <textarea name="conversations[${conversationIndex - 1}][left_translation][]" rows="2" required></textarea><br><br>
+
+<label for="line-number">Line Number:</label>
+<input type="number" name="conversations[${conversationIndex - 1}][line_number][]" value="${lineNumber - 2}" readonly>
 `;
-        event.target.previousElementSibling.appendChild(leftDialogue);
+// แทรก left dialogue ใหม่ใน div ที่เหมาะสม
+event.target.previousElementSibling.appendChild(leftDialogue);
     } else if (event.target.classList.contains('add-right-dialogue')) {
         console.log('Adding right dialogue...');
         const rightDialogue = document.createElement('div');
@@ -74,8 +111,12 @@ document.addEventListener('click', function (event) {
 
 <label for="right-dialogue-translation">Translation:</label>
 <textarea name="conversations[${conversationIndex - 1}][right_translation][]" rows="2" required></textarea><br><br>
+
+<label for="line-number">Line Number:</label>
+<input type="number" name="conversations[${conversationIndex - 1}][line_number][]" value="${lineNumber - 1}" readonly>
 `;
-        event.target.previousElementSibling.appendChild(rightDialogue);
+// แทรก right dialogue ใหม่ใน div ที่เหมาะสม
+event.target.previousElementSibling.appendChild(rightDialogue);
     }
 });
 

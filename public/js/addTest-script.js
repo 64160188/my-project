@@ -46,7 +46,7 @@ document.getElementById('testForm').addEventListener('submit', function (event) 
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.location.href = `/successPage?testId=${data.testId}`;
+                window.location.href = `/tests?testId=${data.testId}`;
             } else {
                 document.getElementById('result-container').innerHTML = data.message;
                 document.getElementById('result-container').style.display = 'block';
@@ -59,6 +59,7 @@ document.getElementById('testForm').addEventListener('submit', function (event) 
 function filterCategory(category) {
     const lessonItems = document.querySelectorAll('.lesson-item');
     const cardGame = document.getElementById('cardGame');
+    const quizGame = document.getElementById('quizdGame');
 
     lessonItems.forEach(item => {
         if (category === 'all' || item.getAttribute('data-category') === category) {
@@ -73,6 +74,14 @@ function filterCategory(category) {
         document.getElementById('lessonGrid').style.display = 'none';
     } else {
         cardGame.style.display = 'none';
+        document.getElementById('lessonGrid').style.display = 'grid';
+    }
+
+    if (category === 'quiz') {
+        quizGame.style.display = 'grid';
+        document.getElementById('lessonGrid').style.display = 'none';
+    } else {
+        quizGame.style.display = 'none';
         document.getElementById('lessonGrid').style.display = 'grid';
     }
 }

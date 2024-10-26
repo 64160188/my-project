@@ -17,7 +17,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -54,15 +54,12 @@
     </header>
 
 
-    <!-- Translation Section -->
     <div class="translator-container">
         <h1>Translator</h1>
         <form action="/" method="POST" class="translator-form">
             <textarea name="text" placeholder="Enter text" required></textarea>
             <select name="targetLang" required>
-                <option value="" disabled selected>Select Target Language</option>
                 <option value="ja">Japanese</option>
-                <option value="th">Thai</option>
             </select>
             <button type="submit">Translate</button>
         </form>
@@ -82,7 +79,6 @@
                     </p>
                     <% } %>
     </div>
-    <!-- End Translation Section -->
 
 
     
@@ -92,15 +88,11 @@
             <div class="scroll-container-wrapper">
                 <div class="scroll-container">
                     <% lessons.forEach(function(lesson) { %>
+                        <a href="/lessons/<%= lesson.lesson_id %>" class="scroll-item-link">
                         <div class="scroll-item">
-                            <img src="/images/<%= lesson.image %>" alt="<%= lesson.title %>"
-                                style="width: 250px;">
-                            <h3>
-                                <%= lesson.title %>
-                            </h3>
-                            <p>
-                                <%= lesson.description %>
-                            </p>
+                            <img src="/uploads/<%= lesson.image %>" alt="<%= lesson.title %>">
+                            <h3><%= lesson.title %></h3>
+                            <p><%= lesson.description %></p>
                         </div>
                         <% }); %>
                 </div>
@@ -113,16 +105,21 @@
             <h2>โจทย์พาตะลุย</h2>
             <div class="scroll-container-wrapper">
                 <div class="scroll-container">
-                    <!-- Add your scrollable items here -->
-                    <div class="scroll-item">Item 1</div>
-                    <div class="scroll-item">Item 2</div>
-                    <div class="scroll-item">Item 3</div>
-                    <!-- Add more items as needed -->
+                    <% tests.forEach(function(test) { %>
+                        <a href="/tests/<%= test.test_id %>" class="scroll-item-link">
+                            <div class="scroll-item">
+                                <img src="/uploads/<%= test.image %>" alt="<%= test.title %>">
+                                <h3><%= test.title %></h3>
+                                <p><%= test.description %></p>
+                            </div>
+                        </a>
+                    <% }); %>
                 </div>
             </div>
         </div>
     </section>
-    <!-- End Scrollable Horizontal Sections -->
+    
+    
 
 
     <!-- footer -->
@@ -133,7 +130,7 @@
                     <div class="col-md-12 ">
                         <div class="footer-box">
                             <div class="headinga">
-                                <h3>Address</h3>
+                                <h3>เรียนภาษาญี่ปุ่น กับ ChanPe</h3>
                                 <span>Burapha University, 169 Long Had Bangsaen Rd ,Thailand, TH</span>
                                 <p>(+66) 8866458**
                                     <br>64160188@go.buu.ac.th
@@ -149,26 +146,25 @@
                                 <ul class="link">
                                     <li> <a href="#">Home</a></li>
                                     <li> <a href="#">About</a></li>
-
-                                    <li> <a href="#">Brand </a></li>
                                     <li> <a href="#">Specials </a></li>
-                                    <li> <a href="#"> Contact us</a></li>
+                                    <li> <a href="#"> Contact us</a>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="copyright">
-                <div class="container">
-                    <p>© 2019 All Rights Reserved. Design By<a href="https://templates.beatsnoop.com/"> Free Html
-                            Templates</a></p>
-                </div>
-            </div>
         </div>
     </footer>
 
     <script src="/js/opennav-script.js"></script>
+    <script>
+        // Auto-resize textarea based on content
+        document.querySelector('textarea').addEventListener('input', function () {
+            this.style.height = 'auto'; // Reset height to calculate new content height
+            this.style.height = (this.scrollHeight) + 'px'; // Set height to fit the content
+        });
+    </script>
 </body>
 
 </html>

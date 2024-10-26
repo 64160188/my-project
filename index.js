@@ -39,7 +39,7 @@ app.use(session({
     secret: "secret",
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 60000 }
+    cookie: { maxAge: 1800000 }
 }));
 
 
@@ -82,15 +82,14 @@ const uploadImageTest = multer({
 
 const uploadImageCard = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // จำกัดขนาดไฟล์ 5MB
+    limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: function (req, file, cb) {
-        checkFileType(file, cb); // ตรวจสอบประเภทไฟล์ที่อนุญาต
+        checkFileType(file, cb);
     }
 }).fields([
-    { name: 'card_image', maxCount: 1 }, // รับไฟล์รูปภาพการ์ด
-    { name: 'vocab[0][image]', maxCount: 1 }, // รับไฟล์รูปภาพคำศัพท์
-    { name: 'vocab[1][image]', maxCount: 1 }, // เพิ่มรูปภาพคำศัพท์เพิ่มเติม
-    // สามารถเพิ่ม field ตามจำนวนคำศัพท์ที่ต้องการ
+    { name: 'card_image', maxCount: 1 },
+    { name: 'vocab[0][image]', maxCount: 1 },
+    { name: 'vocab[1][image]', maxCount: 1 },
 ]);
 
 
@@ -126,37 +125,39 @@ app.post('/addTestAndQuestions', (req, res) => {
 
         const { test_name, test_description, questions, answers, correct_choices } = req.body;
         const test_image = req.file ? req.file.filename : 'default.jpg';
+        const created_by = req.session.user.id;
+        
+        const sql = 'INSERT INTO tests (name, description, image, created_by) VALUES (?, ?, ?, ?)';
+connection.query(sql, [test_name, test_description, test_image, created_by], (err, testResult) => {
+    if (err) {
+        console.error('Error inserting test:', err);
+        return res.status(500).json({ success: false, message: 'Error adding test' });
+    }
 
-        const sql = 'INSERT INTO tests (name, description, image) VALUES (?, ?, ?)';
-        connection.query(sql, [test_name, test_description, test_image], (err, testResult) => {
-            if (err) {
-                console.error('Error inserting test:', err);
-                return res.status(500).json({ success: false, message: 'Error adding test' });
-            }
+    const testId = testResult.insertId;
 
-            const testId = testResult.insertId;
+    const questionData = questions.map((question, index) => [
+        question,
+        answers[index * 4],
+        answers[index * 4 + 1],
+        answers[index * 4 + 2],
+        answers[index * 4 + 3],
+        correct_choices[index],
+        testId
+    ]);
 
-            const questionData = questions.map((question, index) => [
-                question,
-                answers[index * 4],
-                answers[index * 4 + 1],
-                answers[index * 4 + 2],
-                answers[index * 4 + 3],
-                correct_choices[index],
-                testId
-            ]);
+    const questionSql = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, test_id) VALUES ?';
 
-            const questionSql = 'INSERT INTO questions (question, choice1, choice2, choice3, choice4, correct_choice, test_id) VALUES ?';
+    connection.query(questionSql, [questionData], (err, questionResult) => {
+        if (err) {
+            console.error('Error inserting questions:', err);
+            return res.status(500).json({ success: false, message: 'Error adding questions' });
+        }
 
-            connection.query(questionSql, [questionData], (err, questionResult) => {
-                if (err) {
-                    console.error('Error inserting questions:', err);
-                    return res.status(500).json({ success: false, message: 'Error adding questions' });
-                }
+        res.json({ success: true, testId: testId, message: 'Test and questions added successfully' });
+    });
+});
 
-                res.json({ success: true, testId: testId, message: 'Test and questions added successfully' });
-            });
-        });
     });
 });
 
@@ -178,18 +179,29 @@ app.get('/product/:id', (req, res) => {
 
 
 app.get('/tests/:id', (req, res) => {
-    const testId = parseInt(req.params.id);
-    connection.query('SELECT * FROM tests WHERE test_id = ?', [testId], (err, result) => {
+    const testId = parseInt(req.params.id, 10);
+    if (isNaN(testId)) {
+        return res.status(400).send('Invalid test ID');
+    }
+
+    const testQuery = `
+    SELECT tests.*, users.username AS created_by, users.profile_picture 
+    FROM tests 
+    JOIN users ON tests.created_by = users.id 
+    WHERE test_id = ?`;
+
+    connection.query(testQuery, [testId], (err, result) => {
         if (err) {
             console.error('Error fetching test: ', err);
-            res.status(500).send('Internal Server Error');
+            return res.status(500).send('Internal Server Error');
         } else if (result.length > 0) {
-            res.render('pages/test-detail', { test: result[0] ,user: req.session.user});
+            res.render('pages/test-detail', { test: result[0], user: req.session.user });
         } else {
-            res.status(404).send('Test not found');
+            return res.status(404).send('Test not found');
         }
     });
 });
+
 
 
 
@@ -250,7 +262,7 @@ app.get('/card/:id', (req, res) => {
                 return;
             }
 
-            res.render('pages/card-detail', { card, vocab: vocabResults });
+            res.render('pages/card-detail', { card, vocab: vocabResults, user: req.session.user });
         });
     });
 });
@@ -427,7 +439,7 @@ app.get('/questions/:id', (req, res) => {
                 return;
             }
 
-            res.render('pages/questions', { test: test, questions: questionResults });
+            res.render('pages/questions', { test: test, questions: questionResults, user: req.session.user });
         });
     });
 });
@@ -455,7 +467,8 @@ app.post('/submit-quiz/:testId', (req, res) => {
             score: score,
             totalQuestions: questions.length,
             userAnswers: userAnswers,
-            questions: questions
+            questions: questions,
+            user: req.session.user
         });
     });
 });
@@ -465,23 +478,28 @@ app.post('/submit-quiz/:testId', (req, res) => {
 
 
 app.get('/', (req, res) => {
-    const sql = 'SELECT title, image FROM lessons';
+    const sqlLessons = 'SELECT title, image FROM lessons';
+    const sqlTests = 'SELECT test_id, name AS title, description, image FROM tests'; // Adjust query to select needed fields
 
-    connection.query(sql, (err, results) => {
+    connection.query(sqlLessons, (err, lessonResults) => {
         if (err) {
-            console.error('Error querying the database:', err);
+            console.error('Error querying lessons:', err);
             return res.status(500).send('Internal Server Error');
         }
 
+        connection.query(sqlTests, (err, testResults) => { // Fetch tests here
+            if (err) {
+                console.error('Error querying tests:', err);
+                return res.status(500).send('Internal Server Error');
+            }
 
-        const lessons = results;
-
-
-        res.render('pages/index', {
-            user: req.session.user,
-            lessons: lessons,
-            translation: null,
-            error: null
+            res.render('pages/index', {
+                user: req.session.user,
+                lessons: lessonResults,
+                tests: testResults, // Now correctly defined
+                translation: null,
+                error: null
+            });
         });
     });
 });
@@ -489,65 +507,70 @@ app.get('/', (req, res) => {
 
 
 
+
 app.post("/", async (req, res) => {
+    const sqlLessons = 'SELECT lesson_id, title, image FROM lessons';
+    const sqlTests = 'SELECT test_id, name AS title FROM tests';
 
-    const sql = 'SELECT title, image FROM lessons';
-
-    connection.query(sql, async (err, results) => {
-        if (err) {
-            console.error('Error querying the database:', err);
-            return res.status(500).send('Internal Server Error');
-        }
-
-        const lessons = results;
-
-        const { text, targetLang } = req.body;
-
-
-        const data = new FormData();
-        //data.append('source_language', 'en');
-        data.append('target_language', 'th');
-        data.append('source_language', 'ja');
-        //data.append('target_language', targetLang);
-        data.append('text', text);
-
-        const options = {
-            method: 'POST',
-            url: 'https://text-translator2.p.rapidapi.com/translate',
-            headers: {
-                'x-rapidapi-key': '90c9180ba3msh0d293e3f3103817p1bb520jsn21eceb74e1c8',
-                'x-rapidapi-host': 'text-translator2.p.rapidapi.com',
-                ...data.getHeaders()
-            },
-            data: data
-        };
-
-        try {
-
-            const response = await axios.request(options);
-            const translatedText = response.data.data.translatedText;
-
-
-            res.render('pages/index', {
-                user: req.session.userId,
-                lessons: lessons,
-                translation: translatedText,
-                error: null
-            });
-
-        } catch (error) {
-            console.error('Error fetching translation:', error.message);
-
-
-            res.render('pages/index', {
-                user: req.session.userId,
-                lessons: lessons,
-                translation: null,
-                error: "Error fetching data. Please try again."
-            });
-        }
+    
+    const lessonResults = await new Promise((resolve, reject) => {
+        connection.query(sqlLessons, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
     });
+
+    
+    const testResults = await new Promise((resolve, reject) => {
+        connection.query(sqlTests, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+
+    const { text, targetLang } = req.body;
+
+    const data = new FormData();
+    data.append('target_language', 'th');
+    data.append('source_language', 'ja');
+    data.append('text', text);
+
+    const options = {
+        method: 'POST',
+        url: 'https://text-translator2.p.rapidapi.com/translate',
+        headers: {
+            'x-rapidapi-key': '90c9180ba3msh0d293e3f3103817p1bb520jsn21eceb74e1c8',
+            'x-rapidapi-host': 'text-translator2.p.rapidapi.com',
+            ...data.getHeaders()
+        },
+        data: data
+    };
+
+    try {
+        const response = await axios.request(options);
+        const translatedText = response.data.data.translatedText;
+
+        res.render('pages/index', {
+            user: req.session.userId,
+            lessons: lessonResults,
+            tests: testResults,
+            translation: translatedText,
+            error: null
+        });
+
+    } catch (error) {
+        console.error('Error fetching translation:', error.message);
+
+        res.render('pages/index', {
+            user: req.session.userId,
+            lessons: lessonResults,
+            tests: testResults,
+            translation: null,
+            error: "Error fetching data. Please try again."
+        });
+    }
 });
+
 
 
 app.get('/characters', (req, res) => {
@@ -576,7 +599,7 @@ app.get('/login', (req, res) => {
 
 
 app.get('/questions', (req, res) => {
-    res.render('pages/questions');
+    res.render('pages/questions', { user: req.session.user });
 });
 
 app.get('/sign_up', (req, res) => {
@@ -596,14 +619,19 @@ app.get('/lessons', (req, res) => {
     });
 });
 
-
 app.get('/lessons/:id', (req, res) => {
     const lessonId = parseInt(req.params.id, 10);
     if (isNaN(lessonId)) {
         return res.status(400).send('Invalid lesson ID');
     }
 
-    const lessonQuery = 'SELECT * FROM lessons WHERE lesson_id = ?';
+    const lessonQuery = `
+    SELECT lessons.*, users.username AS created_by, users.profile_picture 
+    FROM lessons 
+    JOIN users ON lessons.created_by = users.id 
+    WHERE lesson_id = ?`;
+
+        
     connection.query(lessonQuery, [lessonId], (err, lessonResults) => {
         if (err || lessonResults.length === 0) {
             console.error('Error fetching lesson:', err);
@@ -621,9 +649,9 @@ app.get('/lessons/:id', (req, res) => {
 
             const conversationQuery = `
                 SELECT * FROM conversation_lines 
-                WHERE lesson_id = ?
-                ORDER BY line_number
-            `;
+                WHERE lesson_id = ? 
+                ORDER BY line_number`;
+                
             connection.query(conversationQuery, [lessonId], (err, conversationResults) => {
                 if (err) {
                     console.error('Error fetching conversation lines:', err);
@@ -632,8 +660,8 @@ app.get('/lessons/:id', (req, res) => {
 
                 const dragAndDropQuery = `
                     SELECT * FROM drag_and_drop_questions 
-                    WHERE lesson_id = ?
-                `;
+                    WHERE lesson_id = ?`;
+                    
                 connection.query(dragAndDropQuery, [lessonId], (err, dragAndDropResults) => {
                     if (err) {
                         console.error('Error fetching Drag and Drop questions:', err);
@@ -654,6 +682,7 @@ app.get('/lessons/:id', (req, res) => {
         });
     });
 });
+
 
 
 
@@ -710,15 +739,11 @@ app.get('/add-lesson', checkLogin, (req, res) => {
     res.render('pages/add-lesson', { user: req.session.user });
 });
 
-
-
 app.post('/add-lesson', uploadImageLesson, async (req, res) => {
-
     const { title, description, characters, conversations } = req.body;
     const lessonImage = req.file ? `${req.file.filename}` : 'default.jpg';
     const created_by = req.session.user.id;
 
-    // SQL Query to Insert Lesson Data
     const lessonQuery = 'INSERT INTO lessons (title, description, image, created_by) VALUES (?, ?, ?, ?)';
 
     try {
@@ -733,7 +758,6 @@ app.post('/add-lesson', uploadImageLesson, async (req, res) => {
 
         const lessonId = lessonResult.insertId;
 
-        // Insert Characters and save their IDs
         const characterPromises = characters.map((character) => {
             const characterQuery = 'INSERT INTO characters (lesson_id, character_name, description, created_by) VALUES (?, ?, ?, ?)';
             return new Promise((resolve, reject) => {
@@ -741,28 +765,35 @@ app.post('/add-lesson', uploadImageLesson, async (req, res) => {
                     if (err) {
                         return reject(err);
                     }
-                    resolve(result.insertId); // Return the character ID
+                    resolve(result.insertId);
                 });
             });
         });
 
-        // Wait for all character inserts to complete and get their IDs
         const characterIds = await Promise.all(characterPromises);
 
-        // Insert Conversations
-        const conversationPromises = conversations.map((conversation, conversationIndex) => {
-            // Get left dialogues
+        // ดึงค่าล่าสุดของ line_number
+        const latestLineNumberQuery = 'SELECT MAX(line_number) AS max_line_number FROM conversation_lines WHERE lesson_id = ?';
+        const [latestLineNumberResult] = await new Promise((resolve, reject) => {
+            connection.query(latestLineNumberQuery, [lessonId], (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+            });
+        });
+
+        let currentLineNumber = latestLineNumberResult.max_line_number || 0; // กำหนดเป็น 0 ถ้าไม่มีค่า
+
+        const conversationPromises = conversations.map((conversation) => {
             const leftDialogues = conversation.left_text || [];
             const rightDialogues = conversation.right_text || [];
-            let lineNumber = 1;  // สำหรับทั้ง left และ right dialogues
 
             leftDialogues.forEach((text, index) => {
                 const leftRomaji = conversation.left_romaji[index];
                 const leftTranslation = conversation.left_translation[index];
-                const characterId = characterIds[0]; // Assume first character for left dialogue
+                const characterId = characterIds[0];
 
                 const conversationLineQuery = 'INSERT INTO conversation_lines (character_id, line_number, content, romaji, translation, lesson_id) VALUES (?, ?, ?, ?, ?, ?)';
-                connection.query(conversationLineQuery, [characterId, lineNumber++, text, leftRomaji, leftTranslation, lessonId], (err) => {
+                connection.query(conversationLineQuery, [characterId, ++currentLineNumber, text, leftRomaji, leftTranslation, lessonId], (err) => {
                     if (err) console.error(err);
                 });
             });
@@ -770,20 +801,17 @@ app.post('/add-lesson', uploadImageLesson, async (req, res) => {
             rightDialogues.forEach((text, index) => {
                 const rightRomaji = conversation.right_romaji[index];
                 const rightTranslation = conversation.right_translation[index];
-                const characterId = characterIds[1]; // Assume second character for right dialogue
+                const characterId = characterIds[1];
 
                 const conversationLineQuery = 'INSERT INTO conversation_lines (character_id, line_number, content, romaji, translation, lesson_id) VALUES (?, ?, ?, ?, ?, ?)';
-                connection.query(conversationLineQuery, [characterId, lineNumber++, text, rightRomaji, rightTranslation, lessonId], (err) => {
+                connection.query(conversationLineQuery, [characterId, ++currentLineNumber, text, rightRomaji, rightTranslation, lessonId], (err) => {
                     if (err) console.error(err);
                 });
             });
-
         });
 
-        // Wait for all conversation inserts to complete
         await Promise.all(conversationPromises);
 
-        // ส่ง lessonId กลับไปยัง client เพื่อใช้ในการ redirect
         res.json({ success: true, message: 'Lesson added successfully!', lessonId: lessonId });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -839,14 +867,13 @@ app.get('/add-dad', (req, res) => {
     const topicId = req.query.topic_id;
     console.log('Lesson ID:', lessonId);
     console.log('Lesson ID:', lessonId);
-    res.render('pages/add-dad', { lesson_id: lessonId, topic_id: topicId });
+    res.render('pages/add-dad', { lesson_id: lessonId, topic_id: topicId, user: req.session.user  });
 });
 
 app.post('/add-question', (req, res) => {
-    console.log(req.body); // ตรวจสอบว่า req.body มีค่าอะไรบ้าง
+    console.log(req.body);
     const { lessonId, sentence, answers, correct_answer } = req.body;
 
-    // ตรวจสอบค่าที่สำคัญ
     console.log('lessonId:', lessonId);
     console.log('sentence:', sentence);
     console.log('answers:', answers);
@@ -864,7 +891,6 @@ app.post('/add-question', (req, res) => {
             return res.status(500).json({ success: false, error: 'ไม่สามารถเริ่มการทำธุรกรรมได้' });
         }
 
-        // คิวรีเพื่อหาค่า Topic ID ล่าสุด
         const getLatestTopicIdQuery = 'SELECT MAX(id) AS latestTopicId FROM drag_and_drop_questions';
         connection.query(getLatestTopicIdQuery, (err, results) => {
             if (err) {
@@ -930,7 +956,7 @@ app.post('/add-question', (req, res) => {
 
 
 app.get('/get-answers', (req, res) => {
-    const query = 'SELECT id, answer FROM drag_and_drop_answers'; // ดึงข้อมูลคำตอบจากฐานข้อมูล
+    const query = 'SELECT id, answer FROM drag_and_drop_answers';
     connection.query(query, (err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
@@ -1176,17 +1202,47 @@ app.get('/profile', (req, res) => {
         return res.redirect('/login');
     }
 
-    connection.query('SELECT * FROM users WHERE id = ?', [userId], (err, result) => {
+    // คำสั่ง SQL เพื่อดึงข้อมูลผู้ใช้, บทเรียน, และโจทย์ที่ผู้ใช้สร้าง
+    const userQuery = 'SELECT * FROM users WHERE id = ?';
+    const lessonsQuery = 'SELECT * FROM lessons WHERE created_by = ?';
+    const testsQuery = 'SELECT * FROM tests WHERE created_by = ?';
+
+    connection.query(userQuery, [userId], (err, userResult) => {
         if (err) {
             console.error('Database query error:', err);
             return res.status(500).send('Database query error');
         }
-        if (result.length === 0) {
+        if (userResult.length === 0) {
             return res.status(404).send('User not found');
         }
-        res.render('pages/profile', { user: result[0] });
+
+        // ดึงบทเรียนที่ผู้ใช้สร้าง
+        connection.query(lessonsQuery, [userId], (error, lessons) => {
+            if (error) {
+                console.error('Database query error:', error);
+                return res.status(500).send('Database query error');
+            }
+
+            // ดึงโจทย์ (tests) ที่ผู้ใช้สร้าง
+            connection.query(testsQuery, [userId], (testError, tests) => {
+                if (testError) {
+                    console.error('Database query error:', testError);
+                    return res.status(500).send('Database query error');
+                }
+
+                // ส่งผลลัพธ์ไปที่ view ของ profile พร้อมบทเรียนและโจทย์ของผู้ใช้
+                res.render('pages/profile', { 
+                    user: { 
+                        ...userResult[0], 
+                        lessons: lessons,
+                        tests: tests 
+                    } 
+                });
+            });
+        });
     });
 });
+
 
 app.post('/update-profile', upload.single('profile_pic'), (req, res) => {
     const userId = req.session.userId;
@@ -1216,6 +1272,70 @@ app.post('/update-profile', upload.single('profile_pic'), (req, res) => {
 });
 
 
+app.delete('/lessons/:id', checkLogin, async (req, res) => {
+    const lessonId = req.params.id;
+    const userId = req.session.userId; // รับ ID ของผู้ใช้จาก session
+
+    // ตรวจสอบว่า lessonId มีค่าหรือไม่และเป็นเลข
+    if (!lessonId || isNaN(lessonId)) {
+        return res.status(400).json({ success: false, message: 'ไม่พบ ID ของบทเรียน' });
+    }
+
+    try {
+        // ตรวจสอบว่าบทเรียนที่ลบเป็นของผู้ใช้หรือไม่
+        const lessonCheck = await connection.query('SELECT * FROM lessons WHERE lesson_id = ? AND created_by = ?', [lessonId, userId]);
+
+        if (lessonCheck.length === 0) {
+            return res.status(404).json({ success: false, message: 'ไม่พบบทเรียนหรือคุณไม่มีสิทธิ์ในการลบ' });
+        }
+
+        // ลบข้อมูลบทเรียนจากฐานข้อมูล
+        const result = await connection.query('DELETE FROM lessons WHERE lesson_id = ?', [lessonId]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ success: true, message: 'ลบบทเรียนสำเร็จ' });
+        } else {
+            res.status(404).json({ success: false, message: 'ไม่พบบทเรียน' });
+        }
+    } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการลบบทเรียน:', error);
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการลบบทเรียน' });
+    }
+});
+
+
+app.delete('/tests/:id', checkLogin, async (req, res) => {
+    const testId = req.params.id;
+    const userId = req.session.userId; // Get the user ID from the session
+
+    // Check if testId is valid and is a number
+    if (!testId || isNaN(testId)) {
+        return res.status(400).json({ success: false, message: 'ไม่พบ ID ของโจทย์' });
+    }
+
+    try {
+        // Check if the test to delete belongs to the user
+        const testCheck = await connection.query('SELECT * FROM tests WHERE test_id = ? AND created_by = ?', [testId, userId]);
+
+        if (testCheck.length === 0) {
+            return res.status(404).json({ success: false, message: 'ไม่พบโจทย์หรือคุณไม่มีสิทธิ์ในการลบ' });
+        }
+
+        // Delete the test from the database
+        const result = await connection.query('DELETE FROM tests WHERE test_id = ?', [testId]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ success: true, message: 'ลบโจทย์สำเร็จ' });
+        } else {
+            res.status(404).json({ success: false, message: 'ไม่พบโจทย์' });
+        }
+    } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการลบโจทย์:', error);
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการลบโจทย์' });
+    }
+});
+
+
 app.delete('/delete-profile', checkLogin, async (req, res) => {
     try {
         const userId = req.session.userId; // รับ id ของผู้ใช้งานจาก session
@@ -1236,8 +1356,6 @@ app.delete('/delete-profile', checkLogin, async (req, res) => {
         res.status(500).json({ success: false, message: 'Error deleting profile' });
     }
 });
-
-
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');

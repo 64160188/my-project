@@ -1,90 +1,85 @@
+main {
+    padding: 20px;
+    font-family: 'Noto Sans JP', sans-serif; 
+    background-color: #f9f9f9; 
+}
 
+h1 {
+    text-align: center;
+    color: #333;
+}
 
 .tab {
-    overflow: hidden;
-    background-color: #f1f1f1;
-    margin: 20px 0;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .tab button {
-    background-color: inherit;
+    background-color: #ff69b4; 
+    color: white; 
     border: none;
-    outline: none;
+    padding: 10px 20px;
+    font-size: 16px;
     cursor: pointer;
-    padding: 14px 16px;
-    transition: background-color 0.3s;
-    font-size: 17px;
     margin: 0 5px;
+    border-radius: 5px; 
+    transition: background-color 0.3s;
 }
 
 .tab button:hover {
-    background-color: #ddd;
-}
-
-.tab button.active {
-    background-color: #ccc;
+    background-color: #ff1493; 
 }
 
 .tabcontent {
-    display: none;
+    display: none; 
     padding: 20px;
-    border: 1px solid #ddd;
-    border-top: none;
+    border: 1px solid #ff69b4; 
+    border-radius: 5px; 
+    background-color: white; 
 }
-
 
 .grid-container {
     display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+    flex-wrap: wrap; 
+    justify-content: space-around; 
 }
 
 .normal-characters, .dakuten-characters, .yoon-characters {
-    width: 32%;
+    width: 30%; 
+    margin-bottom: 20px;
 }
 
 .grid-inner {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-}
-
-.normal-characters {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.dakuten-characters {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.yoon-characters {
-    grid-column: 2;
-    grid-row: 2;
+    display: grid; 
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 10px; 
 }
 
 .card {
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 10px;
     text-align: center;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .card:hover {
-    background-color: #f0f0f0;
+    transform: scale(1.05); 
 }
 
 .card-header {
-    font-size: 1.5em;
+    background-color: #ff69b4; 
+    color: white; 
+    padding: 10px;
+    text-align: center;
+    border-top-left-radius: 5px; 
+    border-top-right-radius: 5px; 
 }
 
 .card-body {
-    font-size: 1em;
+    padding: 15px;
 }
+
 
 .popup {
     display: none;
@@ -95,28 +90,38 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.4);
 }
 
 .popup-content {
     background-color: #fefefe;
     margin: 15% auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    border: 1px solid #ffd0d0;
+    border-radius: 50px;
+    width: 50%;
+    text-align: center;
+}
+#popup-char_value {
+    font-size: 50px;
+    margin-bottom: 50px;
 }
 
-.close {
-    color: #aaa;
-    float: right;
+#popup-description {
     font-size: 28px;
-    font-weight: bold;
+}
+.close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer; 
+    font-size: 20px; 
 }
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+.dakuten-characters .card-header{
+    background-color: rgb(114, 212, 116);
+}
+.yoon-characters .card-header{
+    background-color: #333;
 }

@@ -10,92 +10,49 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/allDetail.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
-    <style>
-        #vocabContainer {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        #vocabContainer h2 {
-            margin-top: 0;
-        }
-        
-        .vocab-card {
-            display: none;
-            width: 300px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            text-align: center;
-            margin: 20px auto;
-        }
-        
-        .card-header {
-            margin-bottom: 10px;
-        }
-        
-        #vocab-image {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        
-        .card-content p {
-            font-size: 16px;
-            margin: 10px 0;
-        }
-        
-        .card-controls {
-            margin-top: 15px;
-        }
-        
-        .card-controls button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        .card-controls button:hover {
-            background-color: #45a049;
-        }
-        
-    </style>
 </head>
 
 <body>
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
+                <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="/images/logo.png" alt="Logo"></a>
+                        <a href="/"><img src="/images/logo.png" alt="Home"></a>
                     </div>
                 </div>
                 <div class="menu-area">
-                    <div class="limit-box">
-                        <nav class="main-menu">
-                            <ul class="menu-area-main">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/products">อุปกรณ์การเรียน</a></li>
-                                <li><a href="/characters">ตัวอักษร</a></li>
-                                <li><a href="/lessons">บทเรียน</a></li>
-                                <li><a href="/quizzes">Quiz</a></li>
-                                <li class="login"><a href="#"><img src="/images/Login.png" alt="Login"></a></li>
-                            </ul>
-                        </nav>
-                    </div>
+                    <nav class="main-menu">
+                        <ul class="menu-area-main">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/characters">ตัวอักษร</a></li>
+                            <li><a href="/lessons">บทเรียน</a></li>
+                            <li><a href="/tests">Quiz</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="menu-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <div class="dropdown-content">
+                            <% if (user) { %>
+                                <a href="/profile">Profile</a>
+                                <a href="/logout">ออกจากระบบ</a>
+                            <% } else { %>
+                                <a id="bt-link" href="/login">Log In</a>
+                                <a id="bt-link" href="/sign_up">Sign Up</a>
+                            <% } %>
+                        </div>
+                    </li>
                 </div>
             </div>
+        </div>
+        
+        <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="/profile">My profile</a>
         </div>
     </header>
 
@@ -104,12 +61,8 @@
             <div class="detail-content">
                 <img src="/uploads/<%= card.image %>" alt="Test Image" class="test-image">
                 <div class="text-content">
-                    <h1>
-                        <%= card.name %>
-                    </h1>
-                    <p>
-                        <%= card.card_description %>
-                    </p>
+                    <h1><%= card.card_name %></h1>
+                    <p><%= card.card_description %></p>
                 </div>
             </div>
         </div>
@@ -156,7 +109,6 @@
         <p>ร้านขายสินค้า &copy; 2024</p>
     </footer>
 
-    <script src="/js/manage-topics.js"></script>
     <script>
         const vocabularies = <%- JSON.stringify(vocab) %>;
         let currentIndex = 0;
@@ -187,17 +139,20 @@
 
         document.getElementById('showVocabBtn').addEventListener('click', function () {
             const vocabContainer = document.getElementById('vocabContainer');
+            const vocabCard = document.getElementById('vocab-card');
+            
             if (vocabContainer.style.display === "none") {
                 vocabContainer.style.display = "block";
                 this.textContent = "Hide Vocabulary";
                 updateCard();
-                document.getElementById('vocab-card').style.display = "block";
+                vocabCard.style.display = "block"; // show vocab card when showing the vocabulary
+            } else {
                 vocabContainer.style.display = "none";
                 this.textContent = "Show Vocabulary";
-                document.getElementById('vocab-card').style.display = "none";
+                vocabCard.style.display = "none"; // hide vocab card when hiding the vocabulary
             }
         });
-
+        
         updateCard();
 
     </script>

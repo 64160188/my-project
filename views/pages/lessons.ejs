@@ -19,7 +19,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -57,19 +57,15 @@
 
 
 
-    <main class="container">
-        <a href="/add-lesson">Add lesson</a>
+    <main class="container"><br><br>
+        <a class="dropbtn-add" href="/add-lesson">Add lesson</a><br><br>
         <section class="grid">
             <% lessons.forEach(lesson=> { %>
                 <a href="/lessons/<%= lesson.lesson_id %>" class="detail-button">
                     <article>
-                        <h2>
-                            <%= lesson.title %>
-                        </h2>
+                        <h2 class="title"><%= lesson.title %></h2>
                         <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
-                        <p>
-                            <%= lesson.description %>
-                        </p>
+                        <p class="destipt"><%= lesson.description %></p>
                     </article>
                 </a>
                 <% }); %>
@@ -79,7 +75,13 @@
     <script src="/js/addTest-script.js"></script>
 
     <footer>
-        <p>© 2024 Your Website Name</p>
+        <div class="headinga">
+            <h3>เรียนภาษาญี่ปุ่น กับ ChanPe</h3>
+            <span>Burapha University, 169 Long Had Bangsaen Rd ,Thailand, TH</span>
+            <p>(+66) 8866458**
+                <br>64160188@go.buu.ac.th
+            </p>
+        </div>
     </footer>
 </body>
 

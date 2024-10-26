@@ -121,6 +121,7 @@ article:hover img {
     transform: scale(1.05);
     transition: transform 0.2s;
 }
+
 .tabs {
     display: flex;
     align-items: center;
@@ -132,7 +133,7 @@ article:hover img {
 }
 
 .dropbtn-add {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     color: white;
     padding: 10px 15px;
     font-size: 16px;
@@ -175,4 +176,18 @@ article:hover img {
     border-color: #4CAF50;
     outline: none;
 
+}
+
+p.destipt {
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+h2.title {
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }

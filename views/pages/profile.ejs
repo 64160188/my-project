@@ -11,13 +11,14 @@
 </head>
 
 <body>
+    <script src="/js/opennav-script.js"></script>
     <header>
         <div class="header">
             <div class="container">
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -54,13 +55,12 @@
     </header>
 
     <h1>User Profile</h1>
-
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'EditProfile')" id="defaultOpen">Profile</button>
-        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
-        <button class="tablinks" onclick="openTab(event, 'Policies')">Policies</button>
+        <button class="tablinks" onclick="openTab(event, 'Lessons')">บทเรียนของคุณ</button>
+        <button class="tablinks" onclick="openTab(event, 'Tests')">โจทย์ของคุณ</button>
     </div>
-
+    
     <div id="EditProfile" class="tabcontent">
         <% if (user.profile_picture) { %>
             <h3>แก้ไขโปรไฟล์</h3>
@@ -83,37 +83,65 @@
         <button id="deleteProfileBtn">ลบโปรไฟล์</button>
     </div>
     
+    <div id="Lessons" class="tabcontent">
+        <h3>บทเรียนของคุณ</h3>
+        <ul id="lessonList">
+            <% if (user.lessons && user.lessons.length > 0) { %>
+                <% user.lessons.forEach(lesson => { %>
+                    <li>
+                        <div class="lesson-info">
+                            <strong><%= lesson.title %></strong>
+                        </div>
+                        <div class="button-group">
+                            <button onclick="deleteLesson(<%= lesson.lesson_id %>)">ลบบทเรียน</button>
+                        </div>
+                    </li>
+                <% }); %>
+            <% } else { %>
+                <li>คุณยังไม่ได้เพิ่มบทเรียนใดๆ</li>
+            <% } %>
+        </ul>
+    </div>
     
-
-    <div id="Settings" class="tabcontent">
-        <h3>Settings</h3>
-        <p>Here you can change your settings.</p>
+    <div id="Tests" class="tabcontent">
+        <h3>โจทย์ของคุณ</h3>
+        <ul id="TestList">
+            <% if (user.tests && user.tests.length > 0) { %>
+                <% user.tests.forEach(test => { %>
+                    <li>
+                        <div class="lesson-info">
+                            <strong><%= test.name %></strong>
+                        </div>
+                        <div class="button-group">
+                            <button onclick="deleteTest(<%= test.test_id %>)">ลบโจทย์</button>
+                        </div>
+                    </li>
+                <% }); %>
+            <% } else { %>
+                <li>คุณยังไม่ได้เพิ่มโจทย์ใดๆ</li>
+            <% } %>
+        </ul>
     </div>
-
-    <div id="Policies" class="tabcontent">
-        <h3>Policies</h3>
-        <p>Here you can read the policies of the website.</p>
-    </div>
-
+    
     <script>
         function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";  
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
             }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
+    
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-            document.getElementById(tabName).style.display = "block";  
+    
+            document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
-
-        document.getElementById("defaultOpen").click();
+    
+        document.getElementById("defaultOpen").click();    
 
         document.getElementById('deleteProfileBtn').addEventListener('click', function() {
-            // แสดงกล่องยืนยันการลบ
             const confirmation = confirm('คุณแน่ใจหรือไม่ว่าต้องการลบโปรไฟล์ของคุณ? การลบจะไม่สามารถยกเลิกได้');
             
             if (confirmation) {
@@ -140,6 +168,48 @@
                 });
             }
         });
+
+        function deleteLesson(lessonId) {
+            console.log('Lesson ID to delete:', lessonId); // ตรวจสอบ ID ที่ส่งไป
+        
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบบทเรียนนี้?')) {
+                fetch(`/lessons/${lessonId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+        
+        
+        function deleteTest(testId) {
+            console.log('Test ID to delete:', testId); // Log the test ID to be deleted
+        
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบโจทย์นี้?')) { // Confirm deletion
+                fetch(`/tests/${testId}`, { // Use the correct endpoint for tests
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); 
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Handle any errors
+                });
+            }
+        }
+        
         
     </script>
     <script src="/js/opennav-script.js"></script>

@@ -4,10 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= lesson.title %> - Lesson Detail</title>
+    <title>
+        <%= lesson.title %> - Lesson Detail
+    </title>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/lesson-styles.css">
     <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/css/allDetail.css">
 </head>
 
 <body>
@@ -18,7 +21,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="/images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -33,21 +36,25 @@
                 </div>
                 <div class="menu-right">
                     <li class="dropdown">
-                        <a href="#" class="dropbtn"><% if (user) { %><%= user.username %><% } else { %>Account<% } %></a>
+                        <a href="#" class="dropbtn">
+                            <% if (user) { %>
+                                <%= user.username %>
+                                    <% } else { %>Account<% } %>
+                        </a>
                         <div class="dropdown-content">
                             <% if (user) { %>
                                 <a href="/profile">Profile</a>
                                 <a href="/logout">ออกจากระบบ</a>
-                            <% } else { %>
-                                <a id="bt-link" href="/login">Log In</a>
-                                <a id="bt-link" href="/sign_up">Sign Up</a>
-                            <% } %>
+                                <% } else { %>
+                                    <a id="bt-link" href="/login">Log In</a>
+                                    <a id="bt-link" href="/sign_up">Sign Up</a>
+                                    <% } %>
                         </div>
                     </li>
                 </div>
             </div>
         </div>
-        
+
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
             <a href="/profile">My profile</a>
@@ -57,20 +64,18 @@
 
     <main>
         <section class="lesson-detail">
-            <div class="container">
-                <h1>
-                    <%= lesson.title %>
-                </h1>
-                <div class="lesson-image">
-                    <img src="/uploads/<%= lesson.image %>" alt="Lesson Image">
-                </div>
-                <div class="lesson-description">
-                    <p>
-                        <%= lesson.description %>
-                    </p>
+            <div class="detail-content">
+                <img src="/uploads/<%= lesson.image %>" alt="Lesson Image" class="lesson-image">
+                <div class="text-content">
+                    <h1><%= lesson.title %></h1>
+                    <p><%= lesson.description %></p>
+                    <strong>ผู้เพิ่มบทเรียน: </strong>
+                    <img src="/uploads/<%= lesson.profile_picture %>" alt="<%= lesson.created_by %>'s Profile Picture" class="user-image">
+                    <span class="username"><%= lesson.created_by %></span>
                 </div>
             </div>
         </section>
+        
 
         <section class="tabs-section">
             <div class="container">
@@ -87,44 +92,70 @@
                 <!-- แท็บตัวอักษร -->
                 <div class="tab-content active" id="characters">
                     <h2>ตัวละครสนทนา</h2>
-                    <ul>
-                        <% characters.forEach(character=> { %>
-                            <li>
-                                <%= character.character_name %>: <%= character.description || 'ไม่มีคำอธิบาย' %>
-                            </li>
-                            <% }); %>
-                    </ul>
+                    <table class="character-table">
+                        <ul>
+                            <% characters.forEach(character=> { %>
+                                <li><%= character.character_name %>: <%= character.description || 'ไม่มีคำอธิบาย' %></li>
+                                <% }); %>
+                        </ul><br><br>
+                    <h2>คำศัพท์</h2>
+                        <thead>
+                            <tr>
+                                <th>ชื่อตัวละคร</th>
+                                <th>คำอ่าน</th>
+                                <th>คำอธิบาย</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% conversationLines.forEach(line=> { %>
+                                <tr>
+                                    <td><%= line.content %></td>
+                                    <td><%= line.romaji || 'ไม่มีโรมาจิ' %></td>
+                                    <td><%= line.translation || 'ไม่มีคำอธิบาย' %></td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <!-- แท็บบทสนทนา -->
-                <div class="tab-content" id="conversation">
+
+            
+            <div class="tab-content" id="conversation">
+                <div class="container" id="tab-content-container">
                     <h2>บทสนทนา</h2>
-                    <div class="conversation-lines">
-                        <% conversationLines.forEach(line=> { %>
-                            <div
-                                class="line-content <%= line.character_id === Math.min(...conversationLines.map(c => c.character_id)) ? 'left' : 'right' %>">
-                                <strong>ตัวละคร <%= line.character_id %>:</strong>
+                    <div class="conversation-lines" id="conversation-lines">
+                        <% conversationLines.forEach((line, index) => { %>
+                            <div class="line-content <%= line.character_id === Math.min(...conversationLines.map(c => c.character_id)) ? 'left' : 'right' %>"
+                                id="line-<%= index %>" style="display: none;">
+                                <% 
+                                    // ค้นหาชื่อตัวละครที่ตรงกับ character_id
+                                    const character = characters.find(c => c.id === line.character_id); 
+                                %>
+                                <strong><%= character ? character.character_name : 'ไม่พบตัวละคร' %>:</strong>
                                 <p>
                                     <%= line.content %>
                                 </p>
-                                <em>  <%= line.romaji %>,<br><br>
-                                      <%= line.translation %></em>
+                                <em><%= line.romaji %><br><br><%= line.translation %>
+                                </em>
                             </div>
-                            <% }); %>
+                        <% }); %>
                     </div>
+                    <button id="next-button" onclick="showNextLine()">ไปยังบทสนทนาถัดไป</button>
                 </div>
+            </div>
+            
+            
+            <div class="tab-content" id="practice">
+                <h2>การฝึกฝน</h2>
+                <p>ข้อมูลการฝึกฝนจะถูกโหลดที่นี่</p>
 
-                <!-- แท็บการฝึกฝน -->
-                <div class="tab-content" id="practice">
-                    <h2>การฝึกฝน</h2>
-                    <p>ข้อมูลการฝึกฝนจะถูกโหลดที่นี่</p>
-
-                    <% if (hasGame) { %>
-                        <a href="/DragandDropGame/<%= lesson.lesson_id %>">เล่นเกม Drag and Drop</a>
-                        <% } else { %>
-                            <p>ยังไม่มีเกม Drag and Drop สำหรับบทเรียนนี้</p>
-                            <% } %>
-                </div>
+                <% if (hasGame) { %>
+                    <a href="/DragandDropGame/<%= lesson.lesson_id %>">เล่นเกม Drag and Drop</a>
+                    <% } else { %>
+                        <p>ยังไม่มีเกม Drag and Drop สำหรับบทเรียนนี้</p>
+                        <% } %>
+            </div>
 
         </section>
 
@@ -139,9 +170,14 @@
             </div>
         </section>
     </main>
-
     <footer>
-        <p>ร้านขายสินค้า &copy; 2024</p>
+        <div class="headinga">
+            <h3>เรียนภาษาญี่ปุ่น กับ ChanPe</h3>
+            <span>Burapha University, 169 Long Had Bangsaen Rd ,Thailand, TH</span>
+            <p>(+66) 8866458**
+                <br>64160188@go.buu.ac.th
+            </p>
+        </div>
     </footer>
 
     <script>
@@ -157,6 +193,29 @@
                 document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
             });
         });
+
+
+        let currentIndex = 0;
+        const totalLines = <%= conversationLines.length %>;
+
+        function showNextLine() {
+            // แสดงบรรทัดบทสนทนาปัจจุบัน
+            const currentLine = document.getElementById(`line-${currentIndex}`);
+            if (currentLine) {
+                currentLine.style.display = 'block'; // แสดงบรรทัดปัจจุบัน
+            }
+
+            // เลื่อนไปบรรทัดถัดไป
+            currentIndex++;
+
+            // ถ้าถึงบรรทัดสุดท้าย ปุ่มจะถูกปิดใช้งาน
+            if (currentIndex >= totalLines) {
+                const nextButton = document.getElementById('next-button');
+                nextButton.innerText = 'จบการสนทนา';
+                nextButton.disabled = true; // ปิดการใช้งานปุ่ม
+            }
+        }
+
     </script>
 </body>
 

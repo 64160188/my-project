@@ -16,7 +16,7 @@
                 <button class="openbtn" onclick="openNav()">☰</button>
                 <div class="logo_section">
                     <div class="logo">
-                        <a href="#"><img src="images/logo.png" alt="#"></a>
+                        <a href="/"><img src="/images/logo.png" alt="#"></a>
                     </div>
                 </div>
                 <div class="menu-area">
@@ -60,21 +60,28 @@
                 <div class="text-content">
                     <h1><%= test.name %></h1>
                     <p><%= test.description %></p>
+                    <strong>ผู้สร้างการทดสอบ: </strong>
+                    <img src="/uploads/<%= test.profile_picture %>" alt="<%= test.created_by %>" class="user-image">
+                    <span class="username"><%= test.created_by %></span>
                 </div>
             </div>
         </div>
         <div class="navigation">
             <a href="/tests" class="nav-button">Back to Tests</a>
             <a href="/questions/<%= test.test_id %>" class="nav-button">Start Quiz</a>
-        </div>
+        </div>        
     </main>
 
 
-    
     <footer>
-        <p>ร้านขายสินค้า &copy; 2024</p>
+        <div class="headinga">
+            <h3>เรียนภาษาญี่ปุ่น กับ ChanPe</h3>
+            <span>Burapha University, 169 Long Had Bangsaen Rd ,Thailand, TH</span>
+            <p>(+66) 8866458**
+                <br>64160188@go.buu.ac.th
+            </p>
+        </div>
     </footer>
 
-    <script src="/js/manage-topics.js"></script>
 </body>
 </html>
